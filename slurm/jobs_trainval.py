@@ -15,7 +15,7 @@ def make_slurm(job_name,
                launch=False):
     job_name = f"slurm/{city_val}_train_val.slurm"
     start_script = ("#!/bin/bash\n" +
-                    f"#SBATCH --job-name={job_name}\n" +
+                    f"#SBATCH --job-name=regression\n" +
                     "#SBATCH --output=output_ruche/%x.o%j\n" +
                     "#SBATCH --time=24:00:00\n" +
                     "#SBATCH --ntasks=1\n" +
