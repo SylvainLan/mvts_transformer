@@ -111,7 +111,7 @@ def make_slurm(job_name,
                 "--no_timestamp\n"
 
     command_3 = f"cp {job_name} experiments/{name}/\n" +\
-                f"rm {job_name}"
+                f"rm {job_name}\n"
 
     with open(job_name, 'w') as fh:
         fh.write(start_script)
