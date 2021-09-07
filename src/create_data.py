@@ -5,8 +5,8 @@ import argparse
 def _parse():
     parser = argparse.ArgumentParser()
     parser.add_argument("--cities_test", nargs="+", type=int, required=True)
-    parser.add_argument("--cities_val", nargs="+", type=int, required=True)
     parser.add_argument("--name", type=str, required=False, default="")
+    parser.add_argument("--cities_val", nargs="+", type=int, required=False, default=None)
     parser.add_argument("--cities_train", nargs="+", type=int, required=False, default=None)
     args = parser.parse_args()
     return args
@@ -26,10 +26,19 @@ if __name__ == "__main__":
 
     df["date"] = pd.to_datetime(df["date"])
     df = df.set_index(["CITY_NAME", "date"])
-    if cities_train is None:
-        cities_train = list(set(cities).difference([*cities_test, *cities_val]))
+    if cities_val is None:
+        if cities_train is None:
+            raise AttributeError("au moins train ou val")
+        else:
+            cities_val = list(set(cities).difference([*cities_test, *cities_train]))
+            postfix = ""
+    else:
+        if cities_train is None:
+            cities_train = list(set(cities).difference([*cities_test, *cities_val]))
+            postfix = "SINGLE"
+
     df_train = df.loc[cities_train]
     df_val = df.loc[cities_val]
 
-    df_train.to_csv(f"data/regression/HUR/HUR_{name}TRAIN.csv")
-    df_val.to_csv(f"data/regression/HUR/HUR_{name}VAL.csv")
+    df_train.to_csv(f"data/regression/HUR/HUR_{name}{postfix}TRAIN.csv")
+    df_val.to_csv(f"data/regression/HUR/HUR_{name}{postfix}VAL.csv")
