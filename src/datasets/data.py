@@ -9,7 +9,7 @@ from itertools import repeat, chain
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
-from sktime.utils import load_data
+#from sktime.utils import load_data
 
 from datasets import utils
 
@@ -821,10 +821,103 @@ class PMUData(BaseData):
         df = pd.read_csv(filepath)
         return df
 
+class HURData(BaseData):
+    """
+    Dataset class for Soil Moisture Data
+    Attributes:
+        all_df: dataframe indexed by ID, with multiple rows corresponding to the same index (sample).
+            Each row is a time step; Each column contains a feature.
+        feature_df: contains the subset of columns of `all_df` which correspond to selected features
+        feature_names: names of columns contained in `feature_df` (same as feature_df.columns)
+        all_IDs: IDs contained in `all_df`/`feature_df` (same as all_df.index.unique() )
+        max_seq_len: maximum sequence (time series) length (optional). Used only if script argument `max_seq_len` is not
+            defined.
+    """
+
+
+    def __init__(self, root_dir, file_list=None, pattern=None, n_proc=1, limit_size=None, config=None):
+
+        self.set_num_processes(n_proc=n_proc)
+
+        self.config = config
+        if config["max_seq_len"]:
+            self.max_seq_len = config["max_seq_len"]
+        else:
+            self.max_seq_len = 30
+        self.dic_idx = {}
+        self.all_df, self.labels_df = self.load_all(root_dir=root_dir, file_list=file_list, pattern=pattern)
+        self.all_IDs = self.all_df.index.unique()
+
+        self.feature_names = self.all_df.columns
+        self.feature_df = self.all_df
+
+    def load_all(self, root_dir, file_list=None, pattern=None):
+        """
+        Loads datasets from csv files contained in `root_dir` into a dataframe, optionally choosing from `pattern`
+        Args:
+            root_dir: directory containing all individual .csv files
+            file_list: optionally, provide a list of file paths within `root_dir` to consider.
+                Otherwise, entire `root_dir` contents will be used.
+            pattern: optionally, apply regex string to select subset of files
+        Returns:
+            all_df: a single (possibly concatenated) dataframe with all data corresponding to specified files
+            labels_df: dataframe containing label(s) for each sample
+        """
+
+        # Select paths for training and evaluation
+        if file_list is None:
+            data_paths = glob.glob(os.path.join(root_dir, '*'))  # list of all paths
+        else:
+            data_paths = [os.path.join(root_dir, p) for p in file_list]
+        if len(data_paths) == 0:
+            raise Exception('No files found using: {}'.format(os.path.join(root_dir, '*')))
+
+        if pattern is None:
+            # by default evaluate on
+            selected_paths = data_paths
+        else:
+            selected_paths = list(filter(lambda x: re.search(pattern, x), data_paths))
+
+        input_paths = [p for p in selected_paths if os.path.isfile(p) and p.endswith('.csv')]
+        if len(input_paths) == 0:
+            raise Exception("No .csv files found using pattern: '{}'".format(pattern))
+
+        all_df, labels_df = self.load_single(input_paths[0])  # a single file contains dataset
+
+        return all_df, labels_df
+
+
+
+    def load_single(self, filepath):
+        df = pd.read_csv(filepath)
+        df["date"] = pd.to_datetime(df["date"])
+        df = df.set_index(["CITY_NAME", "date"]).sort_index()
+        df["log_prec"] = df["prec"].apply(lambda x: np.log(x + 1))
+        variables = ["TM", "RH", "TMIN", "TMAX", "RHMIN", "prec", "log_prec", "ETP0"]
+        variables = ["TM", "RH", "TMIN", "TMAX", "RHMIN", "prec", "log_prec"]
+        indexes = [(c, date) for c in df.index.unique(level=0) for date in df.loc[c].index[self.max_seq_len - 1:]]
+        self.dic_idx = {i: (c, date) for i, (c, date) in enumerate(indexes)}
+        all_df = [[df.loc[c].loc[date:date+pd.DateOffset(days=self.max_seq_len - 1), v].values
+                   for c in df.index.unique(level=0)
+                   for date in df.loc[c].index[:-self.max_seq_len + 1]]
+                  for v in variables]
+        all_df = pd.concat([pd.DataFrame({f"dim_{i}": all_df[i][k] for i, _ in enumerate(variables)},
+                                         index=[k for _ in range(self.max_seq_len)])
+                            for k in range(len(all_df[0]))])
+        if self.config["task"] == "regression":
+            labels_df = [df.loc[c].loc[date, "HUR"]
+                         for c in df.index.unique(level=0)
+                         for date in df.loc[c].index[self.max_seq_len - 1:]]
+            labels_df = pd.DataFrame(labels_df, dtype=np.float32)
+        elif self.config["task"] == "imputation":
+            labels_df = None
+        return all_df, labels_df
 
 
 data_factory = {'weld': WeldData,
                 'hdd': HDD_data,
                 'tsra': TSRegressionArchive,
                 'semicond': SemicondTraceData,
-                'pmu': PMUData}
+                'pmu': PMUData,
+                'hur': HURData,
+                }
