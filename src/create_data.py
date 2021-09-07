@@ -31,14 +31,15 @@ if __name__ == "__main__":
             raise AttributeError("au moins train ou val")
         else:
             cities_val = list(set(cities).difference([*cities_test, *cities_train]))
-            postfix = ""
+            postfix = "SINGLE"
     else:
         if cities_train is None:
             cities_train = list(set(cities).difference([*cities_test, *cities_val]))
-            postfix = "SINGLE"
+            postfix = ""
 
     df_train = df.loc[cities_train]
     df_val = df.loc[cities_val]
+    print(postfix)
 
     df_train.to_csv(f"data/regression/HUR/HUR_{name}{postfix}TRAIN.csv")
     df_val.to_csv(f"data/regression/HUR/HUR_{name}{postfix}VAL.csv")
