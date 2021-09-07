@@ -30,3 +30,9 @@ _build
 logs
 
 .idea
+
+# experiments and data folders
+experiments
+analysis
+data/
+*.slurm
