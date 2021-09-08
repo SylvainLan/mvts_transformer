@@ -79,12 +79,13 @@ def make_slurm_val(job_name,
 
     command_3 = f"cp {job_name} experiments/{exp_name}/\n" +\
                 f"rm {job_name}\n" +\
-                f"rm data/regression/HUR/HUR_{pattern}*.csv\n"
+                ""
+                # f"rm data/regression/HUR/HUR_{pattern}*.csv\n"
 
     with open(job_name, 'w') as fh:
         fh.write(start_script)
         fh.write(command_create)
-        fh.write(command)
+        # fh.write(command)
         fh.write(command_2)
         fh.write(command_3)
 
@@ -173,7 +174,7 @@ def make_slurm_train(job_name,
     with open(job_name, 'w') as fh:
         fh.write(start_script)
         fh.write(command_create)
-        fh.write(command)
+        # fh.write(command)
         fh.write(command_2)
         fh.write(command_3)
 
@@ -186,4 +187,5 @@ city_test = 6
 
 if __name__ == "__main__":
     for city in cities:
-        make_slurm_train(job_name=f"slurm/trainval_{city}.slurm", city_test=city_test, city_train=city, seq_len=16, epochs=2000, batch_size=32, d_model=16, d_ff=128, layers=2, heads=4, launch=True)
+        make_slurm_val(job_name=f"slurm/trainval_{city}.slurm", city_test=city_test, city_val=city, seq_len=16, epochs=2000, batch_size=32, d_model=16, d_ff=128, layers=2, heads=4, launch=True)
+        # make_slurm_train(job_name=f"slurm/trainval_{city}.slurm", city_test=city_test, city_train=city, seq_len=16, epochs=2000, batch_size=32, d_model=16, d_ff=128, layers=2, heads=4, launch=True)
