@@ -90,14 +90,21 @@ def main(config):
     # Note: currently a validation set must exist, either with `val_pattern` or `val_ratio`
     # Using a `val_pattern` means that `val_ratio` == 0 and `test_ratio` == 0
     if config['val_ratio'] > 0:
-        train_indices, val_indices, test_indices = split_dataset(data_indices=my_data.all_IDs,
-                                                                 validation_method=validation_method,
-                                                                 n_splits=1,
-                                                                 validation_ratio=config['val_ratio'],
-                                                                 test_set_ratio=config['test_ratio'],  # used only if test_indices not explicitly specified
-                                                                 test_indices=test_indices,
-                                                                 random_seed=1337,
-                                                                 labels=labels)
+        if config['val_continuous']:
+            # Je fais un split de façon à garder les données de val après
+            int_split = int(len(my_data.all_IDs) * (1 - config['val_ratio']))
+            train_indices = [my_data.all_IDs[:int_split]]
+            val_indices = [my_data.all_IDs[int_split:]]
+            test_indices = []
+        else:
+            train_indices, val_indices, test_indices = split_dataset(data_indices=my_data.all_IDs,
+                                                                     validation_method=validation_method,
+                                                                     n_splits=1,
+                                                                     validation_ratio=config['val_ratio'],
+                                                                     test_set_ratio=config['test_ratio'],  # used only if test_indices not explicitly specified
+                                                                     test_indices=test_indices,
+                                                                     random_seed=1337,
+                                                                     labels=labels)
         train_indices = train_indices[0]  # `split_dataset` returns a list of indices *per fold/split*
         val_indices = val_indices[0]  # `split_dataset` returns a list of indices *per fold/split*
     else:
