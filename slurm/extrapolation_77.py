@@ -21,7 +21,7 @@ def make_slurm(exp_name, job_name_short, job_name_long, seq_len, d_model, val_co
 if __name__ == "__main__":
     d_model = [16, 64]
     seq_len = [10, 30]
-    val_contiguous = [False]
+    val_contiguous = [True, False]
     for i, (d, s, v) in enumerate(itertools.product(d_model, seq_len, val_contiguous)):
         exp_name = f"77_{d}_{s}_val_c" if v else f"77_{d}_{s}_random_val"
         job_name_long = f"slurm/extrapolation_77_{i}.slurm"
