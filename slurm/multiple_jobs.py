@@ -1,4 +1,4 @@
-from utils_2 import make_slurm
+from utils import make_slurm
 import itertools
 
 seq_lens = [16]
