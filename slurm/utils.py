@@ -20,7 +20,7 @@ def start_script(job_name):
     return command
 
 
-def train_command(name, pattern, seq_len, val_ratio=0.2, epochs=2000, batch_size=32, d_model=16, d_ff=128, heads=4, layers=2):
+def train_command(name, pattern, seq_len, val_ratio=0.2, epochs=2000, batch_size=32, d_model=16, d_ff=128, heads=4, layers=2, other_args=None):
     command = "python src/main.py " +\
               "--output_dir experiments " +\
               f"--name {name} " +\
@@ -39,7 +39,12 @@ def train_command(name, pattern, seq_len, val_ratio=0.2, epochs=2000, batch_size
               f"--max_seq_len {seq_len} " +\
               "--no_timestamp " +\
               "--normalization_layer LayerNorm " +\
-              "--seed 1\n"
+              "--seed 1 "
+    if other_args is not None:
+        for arg in other_args:
+            command += arg + " "
+    command += "\n"
+
     return command
 
 
