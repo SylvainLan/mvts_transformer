@@ -32,6 +32,15 @@ def start_script(job_name, mode="cpu"):
     return command
 
 
+def create_command(station, name, shuffle=False):
+    if not hasattr(station, "__len__"):
+        station = [station]
+    station = [str(s) for s in station]
+    str_station = " ".join(station)
+    command = f"python src/create_data.py --cities_train {str_station} --name {name}\n"
+    return command
+
+
 def train_command(name, pattern, seq_len, val_ratio=0.2, epochs=2000, batch_size=32, d_model=16, d_ff=128, heads=4, layers=2, other_args=None):
     command = "python src/main.py " +\
               "--output_dir experiments " +\
