@@ -2,7 +2,6 @@ import os
 from utils import start_script, train_command, eval_command, clean_command
 import itertools
 
-d_model = [16, 64]
 
 def make_slurm(exp_name, job_name_short, job_name_long, seq_len, d_model, val_contiguous=False, nlayers=2):
     start = start_script(job_name=job_name_short)
