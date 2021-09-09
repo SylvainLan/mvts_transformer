@@ -9,7 +9,7 @@ def make_slurm(exp_name, job_name_short, job_name_long, seq_len, d_model, val_co
         other_args = ["--val_continuous"]
     else:
         other_args = None
-    cmd1 = train_command(name=exp_name, pattern="77TRAIN", seq_len=seq_len, layers=nlayers, other_args=other_args)
+    cmd1 = train_command(name=exp_name, pattern="77TRAIN", seq_len=seq_len, d_model=d_model, layers=nlayers, other_args=other_args)
     cmd2 = eval_command(name=exp_name, train_pattern="77TRAIN", seq_len=seq_len, d_model=d_model, layers=nlayers)
     cmd3 = clean_command(job_name_long=job_name_long, exp_name=exp_name)
     with open(job_name_long, "w") as fh:
