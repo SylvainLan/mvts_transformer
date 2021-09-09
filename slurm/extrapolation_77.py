@@ -26,7 +26,7 @@ if __name__ == "__main__":
     seq_len = [10, 30]
     val_contiguous = [True, False]
     for i, (d, s, v, n) in enumerate(itertools.product(d_model, seq_len, val_contiguous, nlayers)):
-        exp_name = f"77_{d}_{s}_val_c" if v else f"77_{d}_{s}_random_val"
+        exp_name = f"77_{d}_{s}_{n}_val_c" if v else f"77_{d}_{s}_{n}_random_val"
         job_name_long = f"slurm/extrapolation_77_{i}.slurm"
         make_slurm(exp_name=exp_name, job_name_short="extra77", job_name_long=job_name_long, seq_len=s, d_model=d, val_contiguous=v, nlayers=n)
         os.system(f"sbatch {job_name_long}")
