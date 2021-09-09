@@ -90,9 +90,11 @@ def eval_command(name, train_pattern, seq_len, eval_pattern="FULL", batch_size=3
     return command
 
 
-def clean_command(job_name_long, exp_name):
+def clean_command(job_name_long, exp_name, other_args=None):
     command = f"cp {job_name_long} experiments/{exp_name}/\n" +\
               f"rm {job_name_long}\n"
+    for arg in other_args:
+        command += arg + "\n"
     return command
 
 

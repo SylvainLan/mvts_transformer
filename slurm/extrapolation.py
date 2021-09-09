@@ -24,7 +24,8 @@ def make_slurm(station, exp_name, job_name_short, job_name_long, seq_len, d_mode
                         d_model=d_model,
                         layers=nlayers)
     cmd3 = clean_command(job_name_long=job_name_long,
-                         exp_name=exp_name)
+                         exp_name=exp_name,
+                         other_args=[f"rm data/regression/HUR/HUR_{pattern}.csv"])
     with open(job_name_long, "w") as fh:
         fh.write(start)
         fh.write(cmd_create)
