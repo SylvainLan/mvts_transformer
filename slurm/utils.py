@@ -32,16 +32,21 @@ def start_script(job_name, mode="cpu"):
     return command
 
 
-def create_command(station, name, shuffle=False):
+def create_command(station, name, split_dates=False):
     if not hasattr(station, "__len__"):
         station = [station]
     station = [str(s) for s in station]
     str_station = " ".join(station)
-    command = f"python src/create_data.py --cities_train {str_station} --name {name}\n"
+    split_dates = "--split_dates" if split_dates else ""
+    command = f"python src/create_data.py --cities_train {str_station} --name {name} {split_dates}\n"
     return command
 
 
-def train_command(name, pattern, seq_len, val_ratio=0.2, epochs=2000, batch_size=32, d_model=16, d_ff=128, heads=4, layers=2, other_args=None):
+def train_command(name, pattern, seq_len, val_ratio=0.2, epochs=2000, batch_size=32, d_model=16, d_ff=128, heads=4, layers=2, other_args=None, val_pattern=None):
+    if val_pattern is not None:
+        val_line = f"--val_pattern {val_pattern} "
+    else:
+        val_line = f"--val_ratio {val_ratio} "
     command = "python src/main.py " +\
               "--output_dir experiments " +\
               f"--name {name} " +\
@@ -49,7 +54,7 @@ def train_command(name, pattern, seq_len, val_ratio=0.2, epochs=2000, batch_size
               f"--data_dir data/regression/HUR/ " +\
               "--data_class hur " +\
               f"--pattern {pattern} " +\
-              f"--val_ratio {val_ratio} " +\
+              f"{val_line}" +\
               f"--epochs {epochs} " +\
               "--optimizer RAdam " +\
               f"--batch_size {batch_size} " +\
