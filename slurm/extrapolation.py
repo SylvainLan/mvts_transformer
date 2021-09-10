@@ -64,10 +64,9 @@ def make_slurm_split_val(station, exp_name, job_name_short, job_name_long, seq_l
     with open(job_name_long, "w") as fh:
         fh.write(start)
         fh.write(cmd_create)
-        for cmd1 in cmds_train:
-            fh.write(cmd1)
-        for cmd2 in cmds_eval:
-            fh.write(cmd2)
+        for i in range(2):
+            fh.write(cmds_train[i])
+            fh.write(cmds_eval[i])
         fh.write(cmd3)
 
 

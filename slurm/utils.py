@@ -96,7 +96,8 @@ def eval_command(name, train_pattern, seq_len, eval_pattern="FULL", batch_size=3
 
 
 def clean_command(job_name_long, exp_name, other_args=None):
-    command = f"cp {job_name_long} experiments/{exp_name}/\n" +\
+    # TODO attention à l'etoile, peut être que ça peut casser des trucs
+    command = f"cp {job_name_long} experiments/{exp_name}*/\n" +\
               f"rm {job_name_long}\n"
     for arg in other_args:
         command += arg + "\n"
