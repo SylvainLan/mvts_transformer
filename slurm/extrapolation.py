@@ -35,7 +35,14 @@ def make_slurm(station, exp_name, job_name_short, job_name_long, seq_len, d_mode
         fh.write(cmd3)
 
 
-def make_slurm_split_val(station, exp_name, job_name_short, job_name_long, seq_len, d_model, nlayers=2, n_splits=4):
+def make_slurm_split_val(station,
+                         exp_name,
+                         job_name_short,
+                         job_name_long,
+                         seq_len,
+                         d_model,
+                         nlayers=2,
+                         n_splits=4):
     pattern = f"{station}TRAIN"
     val_pattern = f"{station}VAL"
     start = start_script(job_name=job_name_short)
@@ -79,7 +86,7 @@ def make_slurm_split_val(station, exp_name, job_name_short, job_name_long, seq_l
 if __name__ == "__main__":
     nlayers = 4
     d_model = 64
-    seq_len = 30
+    seq_len = 60
     d_ff = 64
     n_splits = 4
     cities = [19, 27, 34, 50, 77, 78, 84, 99]
