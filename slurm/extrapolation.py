@@ -77,10 +77,10 @@ def make_slurm_split_val(station, exp_name, job_name_short, job_name_long, seq_l
 
 
 if __name__ == "__main__":
-    nlayers = 2
-    d_model = 16
+    nlayers = 4
+    d_model = 64
     seq_len = 30
-    d_ff = 128
+    d_ff = 64
     n_splits = 4
     cities = [19, 27, 34, 50, 77, 78, 84, 99]
     for c in cities:
