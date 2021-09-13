@@ -10,6 +10,7 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 #from sktime.utils import load_data
+from datetime import datetime
 
 from datasets import utils
 
@@ -844,7 +845,7 @@ class HURData(BaseData):
             self.max_seq_len = config["max_seq_len"]
         else:
             self.max_seq_len = 30
-        self.dic_idx = {}
+        self.dic_idx = {} # Utilisé pour l'eval
         self.all_df, self.labels_df = self.load_all(root_dir=root_dir, file_list=file_list, pattern=pattern)
         self.all_IDs = self.all_df.index.unique()
 
@@ -897,10 +898,29 @@ class HURData(BaseData):
         variables = ["TM", "RH", "TMIN", "TMAX", "RHMIN", "prec", "log_prec"]
         indexes = [(c, date) for c in df.index.unique(level=0) for date in df.loc[c].index[self.max_seq_len - 1:]]
         self.dic_idx = {i: (c, date) for i, (c, date) in enumerate(indexes)}
-        all_df = [[df.loc[c].loc[date:date+pd.DateOffset(days=self.max_seq_len - 1), v].values
-                   for c in df.index.unique(level=0)
-                   for date in df.loc[c].index[:-self.max_seq_len + 1]]
+        dfs = []
+        for c in df.index.unique(level=0):
+            if len(df.loc[c].index) == len(pd.date_range(df.loc[c].index.min(), df.loc[c].index.max())):
+                dfs.append(df.loc[[c]])
+            else:
+                group_dates = utils.consecutive_groups(
+                        df.loc[c].index,
+                        lambda x: datetime.strptime(str(x), "%Y-%m-%d %H:%M:%S").toordinal()
+                        )
+                for group in group_dates:
+                    dfs.append(df.loc[(c, group), :])
+
+        all_df = [[ddf.loc[c].loc[date:date+pd.DateOffset(days=self.max_seq_len - 1), v].values
+                   for ddf in dfs
+                   for c in ddf.index.unique(level=0)
+                   for date in ddf.loc[c].index[:-self.max_seq_len + 1]
+                   ]
                   for v in variables]
+
+        #all_df = [[df.loc[c].loc[date:date+pd.DateOffset(days=self.max_seq_len - 1), v].values
+        #           for c in df.index.unique(level=0)
+        #           for date in df.loc[c].index[:-self.max_seq_len + 1]]
+        #          for v in variables]
         all_df = pd.concat([pd.DataFrame({f"dim_{i}": all_df[i][k] for i, _ in enumerate(variables)},
                                          index=[k for _ in range(self.max_seq_len)])
                             for k in range(len(all_df[0]))])
