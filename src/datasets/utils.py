@@ -7,6 +7,8 @@ import numpy as np
 import pandas as pd
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from tqdm import tqdm
+from itertools import groupby
+from operator import itemgetter
 
 regression_datasets = ["AustraliaRainfall",
                        "HouseholdPowerConsumption1",
@@ -40,6 +42,12 @@ def uniform_scaling(data, max_len):
     scaled_data = [data[int(j * seq_len / max_len)] for j in range(max_len)]
 
     return scaled_data
+
+
+
+def consecutive_groups(iterable, ordering=lambda x: x):
+    for k, g in groupby(enumerate(iterable), key=lambda x: x[0] - ordering(x[1])):
+        yield map(itemgetter(1), g)
 
 
 # The following code is adapted from the python package sktime to read .ts file.
