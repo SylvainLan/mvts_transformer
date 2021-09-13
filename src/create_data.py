@@ -10,7 +10,7 @@ def _parse():
     parser.add_argument("--name", type=str, required=True)
     parser.add_argument("--cities_train", nargs="+", type=int, required=True)
     parser.add_argument("--cities_val", nargs="+", type=int, required=False, default=None)
-    parser.add_argument("--split_dates", action="store_true")
+    parser.add_argument("--n_splits", required=False, type=int, default=1)
     args = parser.parse_args()
     return args
 
@@ -19,7 +19,7 @@ if __name__ == "__main__":
     cities_train = args.cities_train
     cities_val = args.cities_val
     name = args.name
-    split_dates = args.split_dates
+    n_splits = args.n_splits
 
     if name == "":
         name = f"{city_val}{city_test}"
@@ -34,12 +34,12 @@ if __name__ == "__main__":
     if cities_val is not None:
         df_val = df.loc[cities_val]
         # TODO
-    if split_dates:
+    if n_splits > 1:
         if len(cities_train) > 1:
             raise NotImplementedError("Pas encore implémenté")
         c = cities_train[0]
         dates = df_train.loc[c].index
-        for i, d in enumerate(np.array_split(dates, 2)):
+        for i, d in enumerate(np.array_split(dates, n_splits)):
             df_train.swaplevel().drop(d).to_csv(f"data/regression/HUR/HUR_{name}TRAIN{i}.csv")
             df_train.swaplevel().loc[d].to_csv(f"data/regression/HUR/HUR_{name}VAL{i}.csv")
     else:

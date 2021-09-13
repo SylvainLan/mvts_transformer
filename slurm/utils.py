@@ -32,13 +32,12 @@ def start_script(job_name, mode="cpu"):
     return command
 
 
-def create_command(station, name, split_dates=False):
+def create_command(station, name, n_splits=1):
     if not hasattr(station, "__len__"):
         station = [station]
     station = [str(s) for s in station]
     str_station = " ".join(station)
-    split_dates = "--split_dates" if split_dates else ""
-    command = f"python src/create_data.py --cities_train {str_station} --name {name} {split_dates}\n"
+    command = f"python src/create_data.py --cities_train {str_station} --name {name} --n_splits {n_splits}\n"
     return command
 
 
