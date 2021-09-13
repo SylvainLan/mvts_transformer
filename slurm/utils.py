@@ -3,7 +3,8 @@ import os
 def start_script(job_name, mode="cpu"):
     if mode == "cpu":
         partition = "cpu_long"
-        cpu_per_task = 4
+        # cpu_per_task = 4
+        cpu_per_task = 2
         conda_load = ""
         gpu_load = ""
     elif mode == "gpu":
