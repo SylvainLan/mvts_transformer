@@ -35,16 +35,16 @@ def make_slurm(station, exp_name, job_name_short, job_name_long, seq_len, d_mode
         fh.write(cmd3)
 
 
-def make_slurm_split_val(station, exp_name, job_name_short, job_name_long, seq_len, d_model, nlayers=2):
+def make_slurm_split_val(station, exp_name, job_name_short, job_name_long, seq_len, d_model, nlayers=2, n_splits=4):
     pattern = f"{station}TRAIN"
     val_pattern = f"{station}VAL"
     start = start_script(job_name=job_name_short)
     cmd_create = create_command(station=station,
                                 name=station,
-                                split_dates=True)
+                                n_splits=n_splits)
     cmds_train = []
     cmds_eval = []
-    for i in range(2):
+    for i in range(n_splits):
         cmd1 = train_command(name=f"{exp_name}{i}",
                              pattern=f"{pattern}{i}",
                              val_pattern=f"{val_pattern}{i}",
@@ -58,16 +58,17 @@ def make_slurm_split_val(station, exp_name, job_name_short, job_name_long, seq_l
                             layers=nlayers)
         cmds_train.append(cmd1)
         cmds_eval.append(cmd2)
-    cmd3 = clean_command(job_name_long=job_name_long,
-                         exp_name=exp_name,
-                         other_args=[f"rm data/regression/HUR/HUR_{pattern}*.csv"])
-    with open(job_name_long, "w") as fh:
-        fh.write(start)
-        fh.write(cmd_create)
-        for i in range(2):
+    #cmd3 = clean_command(job_name_long=job_name_long,
+    #                     exp_name=exp_name,
+    #                     other_args=[f"rm data/regression/HUR/HUR_{pattern}*.csv"])
+    job_name_long = job_name_long.split(r"\.slurm")[0]
+    for i in range(n_splits):
+        with open(f"{job_name_long}_{i}.slurm", "w") as fh:
+            fh.write(start)
+            fh.write(cmd_create)
             fh.write(cmds_train[i])
             fh.write(cmds_eval[i])
-        fh.write(cmd3)
+            # fh.write(cmd3)
 
 
 if __name__ == "__main__":
@@ -75,17 +76,20 @@ if __name__ == "__main__":
     d_model = 16
     seq_len = 30
     d_ff = 128
+    n_splits = 4
     cities = [19, 27, 34, 50, 77, 78, 84, 99]
     for c in cities:
         exp_name = f"{c}_extrapolation"
-        job_name_long = f"slurm/{c}_090921.slurm"
+        job_name_long = f"slurm/{c}_130921.slurm"
         make_slurm_split_val(station=c,
                              exp_name=exp_name,
                              job_name_short=f"{c}_extra",
                              job_name_long=job_name_long,
                              seq_len=seq_len,
                              d_model=d_model,
-                             nlayers=nlayers
+                             nlayers=nlayers,
+                             n_splits=n_splits
                              )
 
-        os.system(f"sbatch {job_name_long}")
+        for i in range(n_splits):
+            os.system(f"sbatch {job_name_long}_{i}")
