@@ -44,6 +44,10 @@ def make_slurm_split_val(station, exp_name, job_name_short, job_name_long, seq_l
                                 n_splits=n_splits)
     cmds_train = []
     cmds_eval = []
+    cmds_clean = []
+
+    job_name_long = job_name_long.split(".slurm")[0]
+    jobs_name_long = [f"{job_name_long}_{i}.slurm" for i in range(n_splits)]
     for i in range(n_splits):
         cmd1 = train_command(name=f"{exp_name}{i}",
                              pattern=f"{pattern}{i}",
@@ -56,19 +60,20 @@ def make_slurm_split_val(station, exp_name, job_name_short, job_name_long, seq_l
                             seq_len=seq_len,
                             d_model=d_model,
                             layers=nlayers)
+        cmd3 = clean_command(job_name_long=jobs_name_long[i],
+                             exp_name=f"{exp_name}_{i}",
+                             other_args=[f"rm data/regression/HUR/HUR_{pattern}{i}.csv",
+                                         f"rm data/regression/HUR/HUR_{val_pattern}{i}.csv"])
         cmds_train.append(cmd1)
         cmds_eval.append(cmd2)
-    #cmd3 = clean_command(job_name_long=job_name_long,
-    #                     exp_name=exp_name,
-    #                     other_args=[f"rm data/regression/HUR/HUR_{pattern}*.csv"])
-    job_name_long = job_name_long.split(r"\.slurm")[0]
+        cmds_clean.append(cmd3)
     for i in range(n_splits):
-        with open(f"{job_name_long}_{i}.slurm", "w") as fh:
+        with open(jobs_name_long[i], "w") as fh:
             fh.write(start)
             fh.write(cmd_create)
             fh.write(cmds_train[i])
             fh.write(cmds_eval[i])
-            # fh.write(cmd3)
+            fh.write(cmds_clean[i])
 
 
 if __name__ == "__main__":
