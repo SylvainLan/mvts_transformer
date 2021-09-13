@@ -96,5 +96,6 @@ if __name__ == "__main__":
                              n_splits=n_splits
                              )
 
+        job_name_long = job_name_long.split(".slurm")[0]
         for i in range(n_splits):
-            os.system(f"sbatch {job_name_long}_{i}")
+            os.system(f"sbatch {job_name_long}_{i}.slurm")
