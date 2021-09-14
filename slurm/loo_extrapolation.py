@@ -47,7 +47,7 @@ if __name__ == "__main__":
         job_name_long = f"slurm/{c}_140921.slurm"
         make_slurm(station=c,
                    exp_name=exp_name,
-                   job_name_short=f"{c}_extra",
+                   job_name_short=f"{c}_left",
                    job_name_long=job_name_long,
                    seq_len=seq_len,
                    d_model=d_model,
