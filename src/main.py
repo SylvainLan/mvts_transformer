@@ -248,7 +248,7 @@ def main(config):
     for epoch in tqdm(range(start_epoch + 1, config["epochs"] + 1), desc='Training Epoch', leave=False):
         mark = epoch if config['save_all'] else 'last'
         epoch_start_time = time.time()
-        aggr_metrics_train = trainer.train_epoch(epoch, use_mixup=config["use_mixup"])  # dictionary of aggregate epoch metrics
+        aggr_metrics_train = trainer.train_epoch(epoch)  # dictionary of aggregate epoch metrics
         epoch_runtime = time.time() - epoch_start_time
         print()
         print_str = 'Epoch {} Training Summary: '.format(epoch)
