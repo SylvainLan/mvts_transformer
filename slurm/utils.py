@@ -33,12 +33,20 @@ def start_script(job_name, mode="cpu"):
     return command
 
 
-def create_command(station, name, n_splits=1):
+def create_command(station, name, n_splits=1, station_val=None):
     if not hasattr(station, "__len__"):
         station = [station]
     station = [str(s) for s in station]
     str_station = " ".join(station)
-    command = f"python src/create_data.py --cities_train {str_station} --name {name} --n_splits {n_splits}\n"
+    if station_val is not None:
+        if not hasattr(station_val, "__len__"):
+            station_val = [station_val]
+        station_val = [str(s) for s in station_val]
+        str_station_val = "--cities_val " + " ".join(station_val)
+    else:
+        str_station_val = ""
+
+    command = f"python src/create_data.py --cities_train {str_station} --name {name} --n_splits {n_splits} {str_station_val}\n"
     return command
 
 
