@@ -164,6 +164,8 @@ class Options(object):
                                  help='Normalization layer to be used internally in transformer encoder')
         self.parser.add_argument('--val_continuous', action='store_true',
                                  help='Pour garder des données contigues pour le val')
+        self.parser.add_argument('--use_mixup', action='store_true',
+                                 help='Use mixup during training')
 
     def parse(self):
 
