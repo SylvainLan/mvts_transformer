@@ -388,16 +388,20 @@ class SupervisedRunner(BaseRunner):
         else:
             self.classification = False
 
-    def train_epoch(self, epoch_num=None):
+    def train_epoch(self, epoch_num=None, use_mixup=False):
 
         self.model = self.model.train()
 
         epoch_loss = 0  # total loss of epoch
         total_samples = 0  # total samples in epoch
 
+        use_cuda = torch.cuda.is_available()
+
         for i, batch in enumerate(self.dataloader):
 
             X, targets, padding_masks, IDs = batch
+            if use_mixup:
+                X, targets = utils.mixup(data=X, target=targets, use_cuda=use_cuda)
             targets = targets.to(self.device)
             padding_masks = padding_masks.to(self.device)  # 0s: ignore
             # regression: (batch_size, num_labels); classification: (batch_size, num_classes) of logits
