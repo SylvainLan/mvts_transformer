@@ -18,7 +18,7 @@ def make_slurm(station, exp_name, job_name_short, job_name_long, seq_len, d_mode
                          seq_len=seq_len,
                          d_model=d_model,
                          layers=nlayers,
-                         other_args="--use_mixup")
+                         other_args=["--use_mixup"])
     cmd2 = eval_command(name=exp_name,
                         train_pattern=pattern,
                         seq_len=seq_len,
