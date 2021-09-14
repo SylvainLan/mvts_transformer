@@ -341,3 +341,30 @@ def compute_loss(net: torch.nn.Module,
             running_loss += loss_function(y, netout)
 
     return running_loss / len(dataloader)
+
+
+def mixup(data, target, alpha=1., use_cuda=False):
+    """Create mixup data during training.
+
+    :data: torch.Tensor
+        train data
+    :target: torch.Tensor
+        train target
+    :alpha: float64
+        coefficient for the beta distribution
+    :returns: data_mixup, target_mixup
+
+    """
+    if alpha > 0.:
+        lam = np.random.beta(alpha, alpha)
+    else:
+        lam = 1.
+    batch_size = data.size()[0]
+    if use_cuda:
+        index = torch.randperm(batch_size).cuda()
+    else:
+        index = torch.randperm(batch_size)
+
+    data_mixup = lam * data + (1 - lam) * data[index, :]
+    target_mixup = lam * target + (1 - lam) * target[index, :]
+    return data_mixup, target_mixup
