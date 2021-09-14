@@ -17,7 +17,8 @@ def make_slurm(station, exp_name, job_name_short, job_name_long, seq_len, d_mode
                          val_pattern=val_pattern,
                          seq_len=seq_len,
                          d_model=d_model,
-                         layers=nlayers)
+                         layers=nlayers,
+                         other_args="--use_mixup")
     cmd2 = eval_command(name=exp_name,
                         train_pattern=pattern,
                         seq_len=seq_len,
@@ -43,8 +44,8 @@ if __name__ == "__main__":
     seq_len = 30
     d_ff = 128
     for c in cities:
-        exp_name = f"{c}_extrapolation"
-        job_name_long = f"slurm/{c}_140921.slurm"
+        exp_name = f"mixup_{c}_extrapolation"
+        job_name_long = f"slurm/mixup_{c}_140921.slurm"
         make_slurm(station=c,
                    exp_name=exp_name,
                    job_name_short=f"{c}_left",
