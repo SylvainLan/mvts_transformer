@@ -33,7 +33,7 @@ if __name__ == "__main__":
     df_train = df.loc[cities_train]
     if cities_val is not None:
         df_val = df.loc[cities_val]
-        # TODO
+        df_val.to_csv(f"data/regression/HUR/HUR_{name}VAL.csv")
     if n_splits > 1:
         if len(cities_train) > 1:
             raise NotImplementedError("Pas encore implémenté")
