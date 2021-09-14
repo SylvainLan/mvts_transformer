@@ -36,3 +36,6 @@ experiments
 analysis
 data/
 *.slurm
+
+# temp files
+*.swp
