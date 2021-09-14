@@ -228,7 +228,8 @@ def main(config):
                               collate_fn=lambda x: collate_fn(x, max_len=model.max_len))
 
     trainer = runner_class(model, train_loader, device, loss_module, optimizer, l2_reg=output_reg,
-                                 print_interval=config['print_interval'], console=config['console'])
+                                 print_interval=config['print_interval'], console=config['console'],
+                                 alpha_mixup=config["alpha_mixup"])
     val_evaluator = runner_class(model, val_loader, device, loss_module,
                                        print_interval=config['print_interval'], console=config['console'])
 
