@@ -235,7 +235,7 @@ def check_progress(epoch):
 
 class BaseRunner(object):
 
-    def __init__(self, model, dataloader, device, loss_module, optimizer=None, l2_reg=None, print_interval=10, console=True):
+    def __init__(self, model, dataloader, device, loss_module, optimizer=None, l2_reg=None, print_interval=10, console=True, alpha_mixup=0):
 
         self.model = model
         self.dataloader = dataloader
@@ -247,6 +247,11 @@ class BaseRunner(object):
         self.printer = utils.Printer(console=console)
 
         self.epoch_metrics = OrderedDict()
+        if alpha_mixup == 0:
+            self.mixup = False
+        else:
+            self.mixup = True
+            self.alpha_mixup = alpha_mixup
 
     def train_epoch(self, epoch_num=None):
         raise NotImplementedError('Please override in child class')
@@ -388,7 +393,7 @@ class SupervisedRunner(BaseRunner):
         else:
             self.classification = False
 
-    def train_epoch(self, epoch_num=None, use_mixup=False):
+    def train_epoch(self, epoch_num=None):
 
         self.model = self.model.train()
 
@@ -400,8 +405,8 @@ class SupervisedRunner(BaseRunner):
         for i, batch in enumerate(self.dataloader):
 
             X, targets, padding_masks, IDs = batch
-            if use_mixup:
-                X, targets = utils.mixup(data=X, target=targets, use_cuda=use_cuda)
+            if self.mixup:
+                X, targets = utils.mixup(data=X, target=targets, use_cuda=use_cuda, alpha=self.alpha_mixup)
             targets = targets.to(self.device)
             padding_masks = padding_masks.to(self.device)  # 0s: ignore
             # regression: (batch_size, num_labels); classification: (batch_size, num_classes) of logits
