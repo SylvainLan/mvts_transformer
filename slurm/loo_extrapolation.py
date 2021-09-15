@@ -41,7 +41,7 @@ def make_slurm(station, exp_name, job_name_short, job_name_long, seq_len, d_mode
 
 if __name__ == "__main__":
     nlayers = 4
-    d_model = 128
+    d_model = 64
     seq_len = 30
     d_ff = 128
     alpha_mixup = 0.2
