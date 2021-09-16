@@ -7,7 +7,7 @@ cities = [19, 27, 34, 50, 77, 78, 84, 99]
 def make_slurm(station, exp_name, job_name_short, job_name_long, seq_len, d_model, nlayers, alpha_mixup):
     pattern = f"{station}TRAIN"
     val_pattern = f"{station}VAL"
-    start = start_script(job_name=job_name_short)
+    start = start_script(job_name=job_name_short, mode="gpu")
     stations_train = [c for c in cities if c != station]
     cmd_create = create_command(station=stations_train,
                                 name=station,
@@ -50,7 +50,7 @@ if __name__ == "__main__":
         job_name_long = f"slurm/{alpha_mixup}_{c}_160921.slurm"
         make_slurm(station=c,
                    exp_name=exp_name,
-                   job_name_short=f"{c}_left_{alpha_mixup}",
+                   job_name_short=f"{c}_gpu_{alpha_mixup}",
                    job_name_long=job_name_long,
                    seq_len=seq_len,
                    d_model=d_model,
