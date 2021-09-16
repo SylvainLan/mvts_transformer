@@ -40,14 +40,14 @@ def make_slurm(station, exp_name, job_name_short, job_name_long, seq_len, d_mode
 
 
 if __name__ == "__main__":
-    nlayers = 4
-    d_model = 64
+    nlayers = 2
+    d_model = 32
     seq_len = 30
     d_ff = 128
     alpha_mixup = 0.2
     for c in cities:
         exp_name = f"{c}_extrapolation_{alpha_mixup}"
-        job_name_long = f"slurm/{alpha_mixup}_{c}_140921.slurm"
+        job_name_long = f"slurm/{alpha_mixup}_{c}_160921.slurm"
         make_slurm(station=c,
                    exp_name=exp_name,
                    job_name_short=f"{c}_left_{alpha_mixup}",
