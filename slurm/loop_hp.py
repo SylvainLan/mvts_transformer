@@ -1,6 +1,7 @@
 import itertools
 import subprocess
 import argparse
+import glob
 
 
 nlayers = [2]
@@ -14,12 +15,21 @@ batch_size = [32, 64, 128]
 def _parse():
     parser = argparse.ArgumentParser()
     parser.add_argument("--mode", type=str, default="ruche")
+    parser.add_argument("--clean", action="store_true")
     args = parser.parse_args()
     return args
 
 if __name__ == "__main__":
     args = _parse()
     mode = args.mode
+    clean = args.clean
+
+    if clean:
+        print("cleaning")
+        for f in glob.glob("experiments/single_station/210921/exp*"):
+            print(f)
+            subprocess.call(["rm", "-r", "-f", f])
+        subprocess.call(["rm", "experiments/single_station/210921/README"])
 
     for i, (n, h, d, s, ff, b) in enumerate(itertools.product(nlayers,
                                                              heads,
@@ -35,7 +45,7 @@ if __name__ == "__main__":
                              "--seq_len", f"{s}",
                              "--d_ff", f"{ff}",
                              "--batch_size", f"{b}",
-                             "--exp_prefix", f"exp{i}_"])
+                             "--exp_prefix", f"exp{i}"])
         else:
             subprocess.call(["mkdir", f"experiments/single_station/210921/exp{i}"])
             with open("experiments/single_station/210921/README", "a") as f:
