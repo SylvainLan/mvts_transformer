@@ -1,10 +1,9 @@
 import os
 
-def start_script(job_name, mode="cpu"):
+def start_script(job_name, mode="cpu", ncpus=2):
     if mode == "cpu":
         partition = "cpu_long"
-        # cpu_per_task = 4
-        cpu_per_task = 2
+        cpu_per_task = ncpus
         conda_load = ""
         gpu_load = ""
     elif mode == "gpu":
@@ -105,7 +104,7 @@ def eval_command(name, train_pattern, seq_len, eval_pattern="FULL", batch_size=3
 
 def clean_command(job_name_long, exp_name, other_args=None):
     # TODO attention à l'etoile, peut être que ça peut casser des trucs
-    command = f"cp {job_name_long} experiments/{exp_name}*/\n" +\
+    command = f"cp {job_name_long} experiments/{exp_name}/\n" +\
               f"rm {job_name_long}\n"
     if other_args is not None:
         for arg in other_args:
