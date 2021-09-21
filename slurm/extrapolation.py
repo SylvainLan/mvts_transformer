@@ -72,7 +72,7 @@ def make_slurm_split_val(station,
                             d_model=d_model,
                             layers=nlayers)
         cmd3 = clean_command(job_name_long=jobs_name_long[i],
-                             exp_name=f"{exp_name}_{i}",
+                             exp_name=f"{exp_name}{i}",
                              )
         cmds_train.append(cmd1)
         cmds_eval.append(cmd2)
