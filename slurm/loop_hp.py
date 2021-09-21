@@ -17,7 +17,7 @@ def _parse():
     args = parser.parse_args()
     return args
 
-def __main__():
+if __name__ == "__main__":
     args = _parse()
     mode = args.mode
 
