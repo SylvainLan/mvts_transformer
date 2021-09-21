@@ -3,12 +3,12 @@ import subprocess
 import argparse
 
 
-nlayers = [2, 4]
-heads = [4, 8]
-d_model = [32, 64]
-seq_len = [30, 60]
-d_ff = [64, 128]
-batch_size = [32, 64]
+nlayers = [2]
+heads = [4]
+d_model = [32]
+seq_len = [30]
+d_ff = [64]
+batch_size = [32, 64, 128]
 
 
 def _parse():
@@ -34,7 +34,8 @@ if __name__ == "__main__":
                              "--d_model", f"{d}",
                              "--seq_len", f"{s}",
                              "--d_ff", f"{ff}",
-                             "--batch_size", f"{b}"])
+                             "--batch_size", f"{b}",
+                             "--exp_prefix", f"exp{i}"])
         else:
             subprocess.call(["mkdir", f"experiments/single_station/210921/exp{i}"])
             with open("experiments/single_station/210921/README", "a") as f:
