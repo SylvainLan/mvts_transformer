@@ -21,7 +21,7 @@ if __name__ == "__main__":
     args = _parse()
     mode = args.mode
 
-    for i, (n, h, d, s, f, b) in enumerate(itertools.product(nlayers,
+    for i, (n, h, d, s, ff, b) in enumerate(itertools.product(nlayers,
                                                              heads,
                                                              d_model,
                                                              seq_len,
@@ -33,9 +33,9 @@ if __name__ == "__main__":
                              "--heads", f"{h}",
                              "--d_model", f"{d}",
                              "--seq_len", f"{s}",
-                             "--d_ff", f"{f}",
+                             "--d_ff", f"{ff}",
                              "--batch_size", f"{b}"])
         else:
             subprocess.call(["mkdir", f"experiments/single_station/210921/exp{i}"])
             with open("experiments/single_station/210921/README", "a") as f:
-                f.write(f"exp{i} : nlayers {n}, heads {h}, d_model {d}, seq_len {s}, d_ff {f}, batch_size {b}\n")
+                f.write(f"exp{i} : nlayers {n}, heads {h}, d_model {d}, seq_len {s}, d_ff {ff}, batch_size {b}\n")
