@@ -96,6 +96,7 @@ def _parse():
     parser.add_argument("--seq_len", type=int, default=30)
     parser.add_argument("--d_ff", type=int, default=64)
     parser.add_argument("--batch_size", type=int, default=32)
+    parser.add_argument("--exp_prefix", type=str, default="")
     args = parser.parse_args()
     return args
 
@@ -112,12 +113,18 @@ if __name__ == "__main__":
     d_ff = args.d_ff
     batch_size = args.batch_size
 
+    exp_prefix = args.exp_prefix
+    if exp_prefix != "":
+        exp_prefix = f"{exp_prefix}_"
+
     epochs = 1000
     cities = [19, 27, 34, 50, 77, 78, 84, 99]
     n_splits = 3
+
+
     for c in cities:
-        exp_name = f"{c}_extrapolation"
-        job_name_long = f"slurm/{c}_210921.slurm"
+        exp_name = f"{exp_prefix}{c}_extrapolation"
+        job_name_long = f"slurm/{exp_prefix}{c}_210921.slurm"
         make_slurm_split_val(station=c,
                              exp_name=exp_name,
                              job_name_short=f"{c}_extra",

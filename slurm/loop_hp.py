@@ -35,7 +35,7 @@ if __name__ == "__main__":
                              "--seq_len", f"{s}",
                              "--d_ff", f"{ff}",
                              "--batch_size", f"{b}",
-                             "--exp_prefix", f"exp{i}"])
+                             "--exp_prefix", f"exp{i}_"])
         else:
             subprocess.call(["mkdir", f"experiments/single_station/210921/exp{i}"])
             with open("experiments/single_station/210921/README", "a") as f:
