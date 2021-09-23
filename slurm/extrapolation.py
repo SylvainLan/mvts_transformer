@@ -4,32 +4,32 @@ from utils import start_script, train_command, eval_command, clean_command, crea
 import itertools
 
 
-def make_slurm(station, exp_name, job_name_short, job_name_long, seq_len, d_model, nlayers=2):
-    pattern = f"{station}TRAIN"
-    start = start_script(job_name=job_name_short)
-    cmd_create = create_command(station=station,
-                                name=station)
-    cmd1 = train_command(name=exp_name,
-                         pattern=pattern,
-                         seq_len=seq_len,
-                         d_model=d_model,
-                         layers=nlayers,
-                         batch_size=batch_size,
-                         other_args=other_args)
-    cmd2 = eval_command(name=exp_name,
-                        train_pattern=pattern,
-                        seq_len=seq_len,
-                        d_model=d_model,
-                        layers=nlayers)
-    cmd3 = clean_command(job_name_long=job_name_long,
-                         exp_name=exp_name,
-                         other_args=[f"rm data/regression/HUR/HUR_{pattern}.csv"])
-    with open(job_name_long, "w") as fh:
-        fh.write(start)
-        fh.write(cmd_create)
-        fh.write(cmd1)
-        fh.write(cmd2)
-        fh.write(cmd3)
+# def make_slurm(station, exp_name, job_name_short, job_name_long, seq_len, d_model, nlayers=2):
+#     pattern = f"{station}TRAIN"
+#     start = start_script(job_name=job_name_short)
+#     cmd_create = create_command(station=station,
+#                                 name=station)
+#     cmd1 = train_command(name=exp_name,
+#                          pattern=pattern,
+#                          seq_len=seq_len,
+#                          d_model=d_model,
+#                          layers=nlayers,
+#                          batch_size=batch_size,
+#                          other_args=other_args)
+#     cmd2 = eval_command(name=exp_name,
+#                         train_pattern=pattern,
+#                         seq_len=seq_len,
+#                         d_model=d_model,
+#                         layers=nlayers)
+#     cmd3 = clean_command(job_name_long=job_name_long,
+#                          exp_name=exp_name,
+#                          other_args=[f"rm data/regression/HUR/HUR_{pattern}.csv"])
+#     with open(job_name_long, "w") as fh:
+#         fh.write(start)
+#         fh.write(cmd_create)
+#         fh.write(cmd1)
+#         fh.write(cmd2)
+#         fh.write(cmd3)
 
 
 def make_slurm_split_val(station,
@@ -38,6 +38,7 @@ def make_slurm_split_val(station,
                          job_name_long,
                          seq_len,
                          d_model,
+                         d_ff,
                          nlayers,
                          heads,
                          batch_size,
@@ -62,6 +63,7 @@ def make_slurm_split_val(station,
                              val_pattern=f"{val_pattern}{i}",
                              seq_len=seq_len,
                              d_model=d_model,
+                             d_ff=d_ff,
                              layers=nlayers,
                              heads=heads,
                              batch_size=batch_size,
@@ -69,7 +71,10 @@ def make_slurm_split_val(station,
         cmd2 = eval_command(name=f"{exp_name}{i}",
                             train_pattern=f"{pattern}{i}",
                             seq_len=seq_len,
+                            batch_size=batch_size,
                             d_model=d_model,
+                            d_ff=d_ff,
+                            heads=heads,
                             layers=nlayers)
         cmd3 = clean_command(job_name_long=jobs_name_long[i],
                              exp_name=f"{exp_name}{i}",
@@ -131,6 +136,7 @@ if __name__ == "__main__":
                              job_name_long=job_name_long,
                              seq_len=seq_len,
                              d_model=d_model,
+                             d_ff=d_ff,
                              nlayers=nlayers,
                              heads=heads,
                              batch_size=batch_size,
