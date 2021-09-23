@@ -49,7 +49,7 @@ def create_command(station, name, n_splits=1, station_val=None):
     return command
 
 
-def train_command(name, pattern, seq_len, val_ratio=0.2, epochs=2000, batch_size=32, d_model=16, d_ff=128, heads=4, layers=2, other_args=None, val_pattern=None):
+def train_command(name, pattern, seq_len, batch_size, d_model, d_ff, heads, layers, val_ratio=0.2, epochs=2000, other_args=None, val_pattern=None):
     if val_pattern is not None:
         val_line = f"--val_pattern {val_pattern} "
     else:
@@ -81,7 +81,7 @@ def train_command(name, pattern, seq_len, val_ratio=0.2, epochs=2000, batch_size
     return command
 
 
-def eval_command(name, train_pattern, seq_len, eval_pattern="FULL", batch_size=32, d_model=16, d_ff=128, heads=4, layers=2):
+def eval_command(name, train_pattern, seq_len, batch_size, d_model, d_ff, heads, layers, eval_pattern="FULL"):
     command = "python src/eval.py " +\
               "--output_dir experiments " +\
               f"--name {name} " +\
@@ -112,60 +112,60 @@ def clean_command(job_name_long, exp_name, other_args=None):
     return command
 
 
-def imputation_command(name, pattern, seq_len, val_ratio=0.2, epochs=2000, batch_size=32, d_model=16, d_ff=128, heads=4, layers=2, other_args=None):
-    command = "python src/main.py " +\
-              "--output_dir experiments " +\
-              f"--name {name} " +\
-              f"--task imputation " +\
-              f"--data_dir data/regression/ImputationHUR/ " +\
-              "--data_class hur " +\
-              f"--pattern {pattern} " +\
-              f"--val_ratio {val_ratio} " +\
-              f"--epochs {epochs} " +\
-              "--optimizer RAdam " +\
-              f"--batch_size {batch_size} " +\
-              f"--d_model {d_model} " +\
-              f"--dim_feedforward {d_ff} " +\
-              f"--num_heads {heads} " +\
-              f"--num_layers {layers} " +\
-              f"--max_seq_len {seq_len} " +\
-              "--no_timestamp " +\
-              "--normalization_layer LayerNorm " +\
-              "--seed 1 "
+# def imputation_command(name, pattern, seq_len, val_ratio=0.2, epochs=2000, batch_size=32, d_model=16, d_ff=128, heads=4, layers=2, other_args=None):
+#     command = "python src/main.py " +\
+#               "--output_dir experiments " +\
+#               f"--name {name} " +\
+#               f"--task imputation " +\
+#               f"--data_dir data/regression/ImputationHUR/ " +\
+#               "--data_class hur " +\
+#               f"--pattern {pattern} " +\
+#               f"--val_ratio {val_ratio} " +\
+#               f"--epochs {epochs} " +\
+#               "--optimizer RAdam " +\
+#               f"--batch_size {batch_size} " +\
+#               f"--d_model {d_model} " +\
+#               f"--dim_feedforward {d_ff} " +\
+#               f"--num_heads {heads} " +\
+#               f"--num_layers {layers} " +\
+#               f"--max_seq_len {seq_len} " +\
+#               "--no_timestamp " +\
+#               "--normalization_layer LayerNorm " +\
+#               "--seed 1 "
+# 
+#     if other_args is not None:
+#         for arg in other_args:
+#             command += arg + " "
+#     command += "\n"
+# 
+#     return command
 
-    if other_args is not None:
-        for arg in other_args:
-            command += arg + " "
-    command += "\n"
 
-    return command
-
-
-def retrain_command(name, imputation_name, pattern, seq_len, val_ratio=0.2, epochs=2000, batch_size=32, d_model=16, d_ff=128, heads=4, layers=2, other_args=None):
-    command = "python src/main.py " +\
-              "--output_dir experiments " +\
-              f"--name {name} " +\
-              "--task regression " +\
-              f"--data_dir data/regression/HUR/ " +\
-              "--data_class hur " +\
-              f"--pattern {pattern} " +\
-              f"--val_ratio {val_ratio} " +\
-              f"--epochs {epochs} " +\
-              "--optimizer RAdam " +\
-              f"--batch_size {batch_size} " +\
-              f"--d_model {d_model} " +\
-              f"--dim_feedforward {d_ff} " +\
-              f"--num_heads {heads} " +\
-              f"--num_layers {layers} " +\
-              f"--max_seq_len {seq_len} " +\
-              f"--load_model experiments/{imputation_name}/checkpoints/model_best.pth " +\
-              "--no_timestamp " +\
-              "--seed 1 " +\
-              "--change_output "
-
-    if other_args is not None:
-        for arg in other_args:
-            command += arg + " "
-    command += "\n"
-
-    return command
+# def retrain_command(name, imputation_name, pattern, seq_len, val_ratio=0.2, epochs=2000, batch_size=32, d_model=16, d_ff=128, heads=4, layers=2, other_args=None):
+#     command = "python src/main.py " +\
+#               "--output_dir experiments " +\
+#               f"--name {name} " +\
+#               "--task regression " +\
+#               f"--data_dir data/regression/HUR/ " +\
+#               "--data_class hur " +\
+#               f"--pattern {pattern} " +\
+#               f"--val_ratio {val_ratio} " +\
+#               f"--epochs {epochs} " +\
+#               "--optimizer RAdam " +\
+#               f"--batch_size {batch_size} " +\
+#               f"--d_model {d_model} " +\
+#               f"--dim_feedforward {d_ff} " +\
+#               f"--num_heads {heads} " +\
+#               f"--num_layers {layers} " +\
+#               f"--max_seq_len {seq_len} " +\
+#               f"--load_model experiments/{imputation_name}/checkpoints/model_best.pth " +\
+#               "--no_timestamp " +\
+#               "--seed 1 " +\
+#               "--change_output "
+# 
+#     if other_args is not None:
+#         for arg in other_args:
+#             command += arg + " "
+#     command += "\n"
+# 
+#     return command
