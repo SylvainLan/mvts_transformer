@@ -32,7 +32,7 @@ def start_script(job_name, mode="cpu", ncpus=2):
     return command
 
 
-def create_command(station, name, n_splits=1, station_val=None):
+def create_command(station, name, n_splits=1, station_val=None, length=None):
     if not hasattr(station, "__len__"):
         station = [station]
     station = [str(s) for s in station]
@@ -44,8 +44,12 @@ def create_command(station, name, n_splits=1, station_val=None):
         str_station_val = "--cities_val " + " ".join(station_val)
     else:
         str_station_val = ""
+    if length is None:
+        str_length = ""
+    else:
+        str_length = f"--length {length}"
 
-    command = f"python src/create_data.py --cities_train {str_station} --name {name} --n_splits {n_splits} {str_station_val}\n"
+    command = f"python src/create_data.py --cities_train {str_station} --name {name} --n_splits {n_splits} {str_station_val} {str_length}\n"
     return command
 
 
