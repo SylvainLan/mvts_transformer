@@ -11,6 +11,7 @@ def _parse():
     parser.add_argument("--cities_train", nargs="+", type=int, required=True)
     parser.add_argument("--cities_val", nargs="+", type=int, required=False, default=None)
     parser.add_argument("--n_splits", required=False, type=int, default=1)
+    parser.add_argument("--length", required=False, type=int, default=None)
     args = parser.parse_args()
     return args
 
@@ -20,6 +21,7 @@ if __name__ == "__main__":
     cities_val = args.cities_val
     name = args.name
     n_splits = args.n_splits
+    length = args.length
 
     if name == "":
         name = f"{city_val}{city_test}"
@@ -43,4 +45,14 @@ if __name__ == "__main__":
             df_train.swaplevel().drop(d).to_csv(f"data/regression/HUR/HUR_{name}TRAIN{i}.csv")
             df_train.swaplevel().loc[d].to_csv(f"data/regression/HUR/HUR_{name}VAL{i}.csv")
     else:
+        if length is not None:
+            dfs = []
+            for c in df_train.index.unique(level=0):
+                df_crop = df_train.loc[c]
+                index = df_crop.index
+                df_crop = df_crop.loc[index[:length]]
+                df_crop["CITY_NAME"] = c
+                df_crop = df_crop.reset_index().set_index(["CITY_NAME", "date"]).sort_index()
+                dfs.append(df_crop)
+            df_train = pd.concat(dfs).sort_index()
         df_train.to_csv(f"data/regression/HUR/HUR_{name}TRAIN.csv")
