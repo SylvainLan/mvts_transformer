@@ -17,7 +17,10 @@ def make_retrain(exp_name, path, station, length, job_name):
     nlayers = dic_config["num_layers"]
 
     pattern = f"{station}RETRAINTRAIN"
-    cmd_create = create_command(station=station, name=f"{station}RETRAIN", length=length)
+    cmd_create = create_command(station=cities,
+                                name=f"{station}RETRAIN",
+                                length=length,
+                                cities_crop=station)
     cmd_retrain = train_command(name=exp_name,
                                 pattern=pattern,
                                 seq_len=seq_len,
