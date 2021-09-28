@@ -6,7 +6,8 @@ cities = [19, 27, 34, 50, 77, 78, 84, 99]
 
 def make_retrain(exp_name, path, station, length, job_name):
 
-    start = start_script(job_name=job_name, mode="gpu", ncpus=2)
+    job_name_short = job_name.split("/")[-1].split(".")[0]
+    start = start_script(job_name=job_name_short, mode="gpu", ncpus=2)
     dic_config = json.load(open(f"{path}/configuration.json", "r"))
     seq_len = dic_config["max_seq_len"]
     batch_size = dic_config["batch_size"]
@@ -51,12 +52,11 @@ if __name__ == "__main__":
         exp_name = f"{c}_retrain"
         job_name = f"slurm/{c}_270921.slurm"
         length = 300
-        for c in cities:
-            make_retrain(exp_name=exp_name,
-                         # path=f"experiments/single_station/240921/big/gpu/{c}_extrapolation/",
-                         path=f"experiments/{c}_extrapolation/",
-                         station=c,
-                         length=length,
-                         job_name=job_name)
+        make_retrain(exp_name=exp_name,
+                     # path=f"experiments/single_station/240921/big/gpu/{c}_extrapolation/",
+                     path=f"experiments/{c}_extrapolation/",
+                     station=c,
+                     length=length,
+                     job_name=job_name)
 
         os.system(f"sbatch {job_name}")
