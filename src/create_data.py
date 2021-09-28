@@ -12,6 +12,7 @@ def _parse():
     parser.add_argument("--cities_val", nargs="+", type=int, required=False, default=None)
     parser.add_argument("--n_splits", required=False, type=int, default=1)
     parser.add_argument("--length", required=False, type=int, default=None)
+    parser.add_argument("--cities_crop", required=False, nargs="+", type=int, default=None)
     args = parser.parse_args()
     return args
 
@@ -22,6 +23,7 @@ if __name__ == "__main__":
     name = args.name
     n_splits = args.n_splits
     length = args.length
+    cities_crop = args.cities_crop
 
     if name == "":
         name = f"{city_val}{city_test}"
@@ -47,10 +49,12 @@ if __name__ == "__main__":
     else:
         if length is not None:
             dfs = []
-            for c in df_train.index.unique(level=0):
+            cities_crop = cities_train if cities_crop is None else cities_crop
+            for c in cities_train:
                 df_crop = df_train.loc[c]
-                index = df_crop.index
-                df_crop = df_crop.loc[index[:length]]
+                if c in cities_crop:
+                    index = df_crop.index
+                    df_crop = df_crop.loc[index[:length]]
                 df_crop["CITY_NAME"] = c
                 df_crop = df_crop.reset_index().set_index(["CITY_NAME", "date"]).sort_index()
                 dfs.append(df_crop)
