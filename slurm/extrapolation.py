@@ -103,7 +103,7 @@ def make_slurm_split_val(station,
     for i in range(n_splits):
         with open(jobs_name_long[i], "w") as fh:
             fh.write(start)
-            #fh.write(cmd_create)
+            fh.write(cmd_create)
             fh.write(cmds_train[i])
             fh.write(cmds_eval[i])
             fh.write(cmds_clean[i])
