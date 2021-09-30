@@ -120,6 +120,7 @@ def _parse():
     parser.add_argument("--d_ff", type=int, default=64)
     parser.add_argument("--batch_size", type=int, default=32)
     parser.add_argument("--exp_prefix", type=str, default="")
+    parser.add_argument("--n_splits", type=int, default=1)
     args = parser.parse_args()
     return args
 
@@ -135,6 +136,7 @@ if __name__ == "__main__":
     seq_len = args.seq_len
     d_ff = args.d_ff
     batch_size = args.batch_size
+    n_splits = args.n_splits
 
     exp_prefix = args.exp_prefix
     if exp_prefix != "":
@@ -142,7 +144,6 @@ if __name__ == "__main__":
 
     epochs = 1000
     cities = [19, 27, 34, 50, 77, 78, 84, 99]
-    n_splits = 1
 
     if n_splits > 1:
         slurmer = make_slurm_split_val
