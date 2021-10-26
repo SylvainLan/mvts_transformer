@@ -44,7 +44,7 @@ def make_slurm(station,
                          other_args=[f"rm data/regression/HUR/HUR_{pattern}.csv"])
     with open(job_name_long, "w") as fh:
         fh.write(start)
-        fh.write(cmd_create)
+        #fh.write(cmd_create)
         fh.write(cmd1)
         fh.write(cmd2)
         fh.write(cmd3)
@@ -93,7 +93,8 @@ def make_slurm_split_val(station,
                             d_model=d_model,
                             d_ff=d_ff,
                             heads=heads,
-                            layers=nlayers)
+                            layers=nlayers,
+                            eval_pattern="TRAIN")
         cmd3 = clean_command(job_name_long=jobs_name_long[i],
                              exp_name=f"{exp_name}_{i}",
                              )
@@ -140,18 +141,16 @@ if __name__ == "__main__":
     #if exp_prefix != "":
     #    exp_prefix = f"{exp_prefix}_"
 
-    hidden_dim = [2]
-    n_layers = [1]
-    heads = [2]
+    hidden_dim = [16, 32, 64]
+    n_layers = [2, 4]
+    heads = [2, 8]
     dropout = [.1]
-    seq_len = [60]
-    d_ff = [2]
-    epochs = 2000
+    seq_len = [10, 60]
+    d_ff = [64]
+    epochs = 1000
     batch_size = 32
     n_splits = 3
     ncpus = 2
-    exp_prefix = "cv"
-
 
     cities = [19, 27, 34, 50, 54, 77, 78, 84, 85, 99]
 
@@ -163,11 +162,11 @@ if __name__ == "__main__":
 
     for i, (d, n_l, n_h, do, L, ff) in enumerate(itertools.product(hidden_dim, n_layers, heads, dropout, seq_len, d_ff)):
         for c in cities:
-            exp_name = f"{exp_prefix}{c}_{i}"
-            job_name_long = f"slurm/{exp_prefix}{c}_261021.slurm"
+            exp_name = f"{c}_{d}_{n_l}_{n_h}_{do}_{L}_{ff}"
+            job_name_long = f"slurm/{c}_{i}.slurm"
             slurmer(station=c,
                     exp_name=exp_name,
-                    job_name_short=f"{c}_{i}_cv",
+                    job_name_short=f"{c}_{i}",
                     job_name_long=job_name_long,
                     seq_len=L,
                     d_model=d,
