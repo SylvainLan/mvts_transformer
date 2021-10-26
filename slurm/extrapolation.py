@@ -76,7 +76,7 @@ def make_slurm_split_val(station,
     job_name_long = job_name_long.split(".slurm")[0]
     jobs_name_long = [f"{job_name_long}_{i}.slurm" for i in range(n_splits)]
     for i in range(n_splits):
-        cmd1 = train_command(name=f"{exp_name}{i}",
+        cmd1 = train_command(name=f"{exp_name}_{i}",
                              pattern=f"{pattern}{i}",
                              val_pattern=f"{val_pattern}{i}",
                              seq_len=seq_len,
@@ -86,7 +86,7 @@ def make_slurm_split_val(station,
                              heads=heads,
                              batch_size=batch_size,
                              epochs=epochs)
-        cmd2 = eval_command(name=f"{exp_name}{i}",
+        cmd2 = eval_command(name=f"{exp_name}_{i}",
                             train_pattern=f"{pattern}{i}",
                             seq_len=seq_len,
                             batch_size=batch_size,
@@ -95,7 +95,7 @@ def make_slurm_split_val(station,
                             heads=heads,
                             layers=nlayers)
         cmd3 = clean_command(job_name_long=jobs_name_long[i],
-                             exp_name=f"{exp_name}{i}",
+                             exp_name=f"{exp_name}_{i}",
                              )
         cmds_train.append(cmd1)
         cmds_eval.append(cmd2)
@@ -163,11 +163,11 @@ if __name__ == "__main__":
 
     for i, (d, n_l, n_h, do, L, ff) in enumerate(itertools.product(hidden_dim, n_layers, heads, dropout, seq_len, d_ff)):
         for c in cities:
-            exp_name = f"{exp_prefix}{c}_extrapolation"
+            exp_name = f"{exp_prefix}{c}_{i}"
             job_name_long = f"slurm/{exp_prefix}{c}_261021.slurm"
             slurmer(station=c,
                     exp_name=exp_name,
-                    job_name_short=f"{c}_extra",
+                    job_name_short=f"{c}_{i}_cv",
                     job_name_long=job_name_long,
                     seq_len=L,
                     d_model=d,
