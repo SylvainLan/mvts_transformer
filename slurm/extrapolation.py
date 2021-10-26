@@ -144,12 +144,13 @@ if __name__ == "__main__":
     n_layers = [1]
     heads = [2]
     dropout = [.1]
+    seq_len = [60]
+    d_ff = [2]
     epochs = 2000
     batch_size = 32
     n_splits = 3
+    ncpus = 2
     exp_prefix = "create"
-
-
 
 
     cities = [19, 27, 34, 50, 54, 77, 78, 84, 85, 99]
@@ -160,24 +161,25 @@ if __name__ == "__main__":
         slurmer = make_slurm
 
 
-    for c in cities:
-        exp_name = f"{exp_prefix}{c}_extrapolation"
-        job_name_long = f"slurm/{exp_prefix}{c}_261021.slurm"
-        slurmer(station=c,
-                exp_name=exp_name,
-                job_name_short=f"{c}_extra",
-                job_name_long=job_name_long,
-                seq_len=seq_len,
-                d_model=d_model,
-                d_ff=d_ff,
-                nlayers=nlayers,
-                heads=heads,
-                batch_size=batch_size,
-                n_splits=n_splits,
-                epochs=epochs,
-                ncpus=ncpus,
-                )
+    for i, (d, n_l, n_h, do, L, f) in enumerate(itertools.product(hidden_dim, n_layers, heads, dropout, seq_len, d_ff)):
+        for c in cities:
+            exp_name = f"{exp_prefix}{c}_extrapolation"
+            job_name_long = f"slurm/{exp_prefix}{c}_261021.slurm"
+            slurmer(station=c,
+                    exp_name=exp_name,
+                    job_name_short=f"{c}_extra",
+                    job_name_long=job_name_long,
+                    seq_len=seq_len,
+                    d_model=d,
+                    d_ff=f,
+                    nlayers=n_l,
+                    heads=n_h,
+                    batch_size=batch_size,
+                    n_splits=n_splits,
+                    epochs=epochs,
+                    ncpus=ncpus,
+                    )
 
-        job_name_long = job_name_long.split(".slurm")[0]
-        for f in glob.glob(f"{job_name_long}*.slurm"):
-            os.system(f"sbatch {f}")
+            job_name_long = job_name_long.split(".slurm")[0]
+            for f in glob.glob(f"{job_name_long}*0.slurm"):
+                os.system(f"sbatch {f}")
