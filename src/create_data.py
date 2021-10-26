@@ -28,8 +28,8 @@ if __name__ == "__main__":
     if name == "":
         name = f"{city_val}{city_test}"
 
-    df = pd.read_csv("data/regression/HUR/HUR_BISTRAIN.csv")
-    #df = pd.read_csv("data/regression/HUR/HUR_TRAIN.csv")
+    #df = pd.read_csv("data/regression/HUR/HUR_BISTRAIN.csv")
+    df = pd.read_csv("data/regression/HUR/HUR_TRAIN.csv")
     cities = df.CITY_NAME.unique()
 
     df["date"] = pd.to_datetime(df["date"])
