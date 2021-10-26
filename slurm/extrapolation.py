@@ -169,7 +169,7 @@ if __name__ == "__main__":
                     exp_name=exp_name,
                     job_name_short=f"{c}_extra",
                     job_name_long=job_name_long,
-                    seq_len=seq_len,
+                    seq_len=L,
                     d_model=d,
                     d_ff=f,
                     nlayers=n_l,
