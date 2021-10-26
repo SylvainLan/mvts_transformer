@@ -104,46 +104,55 @@ def make_slurm_split_val(station,
         with open(jobs_name_long[i], "w") as fh:
             fh.write(start)
             fh.write(cmd_create)
-            fh.write(cmds_train[i])
-            fh.write(cmds_eval[i])
-            fh.write(cmds_clean[i])
+            #fh.write(cmds_train[i])
+            #fh.write(cmds_eval[i])
+            #fh.write(cmds_clean[i])
 
 
 
-def _parse():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--ncpus", type=int, default=1)
-    parser.add_argument("--nlayers", type=int, default=2)
-    parser.add_argument("--heads", type=int, default=4)
-    parser.add_argument("--d_model", type=int, default=32)
-    parser.add_argument("--seq_len", type=int, default=30)
-    parser.add_argument("--d_ff", type=int, default=64)
-    parser.add_argument("--batch_size", type=int, default=32)
-    parser.add_argument("--exp_prefix", type=str, default="")
-    parser.add_argument("--n_splits", type=int, default=1)
-    args = parser.parse_args()
-    return args
+#def _parse():
+#    parser = argparse.ArgumentParser()
+#    parser.add_argument("--ncpus", type=int, default=1)
+#    parser.add_argument("--nlayers", type=int, default=2)
+#    parser.add_argument("--heads", type=int, default=4)
+#    parser.add_argument("--d_model", type=int, default=32)
+#    parser.add_argument("--seq_len", type=int, default=30)
+#    parser.add_argument("--d_ff", type=int, default=64)
+#    parser.add_argument("--batch_size", type=int, default=32)
+#    parser.add_argument("--exp_prefix", type=str, default="")
+#    parser.add_argument("--n_splits", type=int, default=1)
+#    args = parser.parse_args()
+#    return args
 
 
 if __name__ == "__main__":
 
-    args = _parse()
+    # args = _parse()
+    # ncpus = args.ncpus
+    # nlayers = args.nlayers
+    # heads = args.heads
+    # d_model = args.d_model
+    # seq_len = args.seq_len
+    # d_ff = args.d_ff
+    # batch_size = args.batch_size
+    # n_splits = args.n_splits
+    #exp_prefix = args.exp_prefix
+    #if exp_prefix != "":
+    #    exp_prefix = f"{exp_prefix}_"
 
-    ncpus = args.ncpus
-    nlayers = args.nlayers
-    heads = args.heads
-    d_model = args.d_model
-    seq_len = args.seq_len
-    d_ff = args.d_ff
-    batch_size = args.batch_size
-    n_splits = args.n_splits
+    hidden_dim = [2]
+    n_layers = [1]
+    heads = [2]
+    dropout = [.1]
+    epochs = 2000
+    batch_size = 32
+    n_splits = 3
+    exp_prefix = "create"
 
-    exp_prefix = args.exp_prefix
-    if exp_prefix != "":
-        exp_prefix = f"{exp_prefix}_"
 
-    epochs = 1000
-    cities = [19, 27, 34, 50, 77, 78, 84, 99]
+
+
+    cities = [19, 27, 34, 50, 54, 77, 78, 84, 85, 99]
 
     if n_splits > 1:
         slurmer = make_slurm_split_val
@@ -153,7 +162,7 @@ if __name__ == "__main__":
 
     for c in cities:
         exp_name = f"{exp_prefix}{c}_extrapolation"
-        job_name_long = f"slurm/{exp_prefix}{c}_290921.slurm"
+        job_name_long = f"slurm/{exp_prefix}{c}_261021.slurm"
         slurmer(station=c,
                 exp_name=exp_name,
                 job_name_short=f"{c}_extra",
@@ -171,6 +180,4 @@ if __name__ == "__main__":
 
         job_name_long = job_name_long.split(".slurm")[0]
         for f in glob.glob(f"{job_name_long}*.slurm"):
-        #for i in range(n_splits):
-            #os.system(f"sbatch {job_name_long}_{i}.slurm")
             os.system(f"sbatch {f}")
