@@ -103,10 +103,10 @@ def make_slurm_split_val(station,
     for i in range(n_splits):
         with open(jobs_name_long[i], "w") as fh:
             fh.write(start)
-            fh.write(cmd_create)
-            #fh.write(cmds_train[i])
-            #fh.write(cmds_eval[i])
-            #fh.write(cmds_clean[i])
+            #fh.write(cmd_create)
+            fh.write(cmds_train[i])
+            fh.write(cmds_eval[i])
+            fh.write(cmds_clean[i])
 
 
 
@@ -150,7 +150,7 @@ if __name__ == "__main__":
     batch_size = 32
     n_splits = 3
     ncpus = 2
-    exp_prefix = "create"
+    exp_prefix = "cv"
 
 
     cities = [19, 27, 34, 50, 54, 77, 78, 84, 85, 99]
@@ -181,5 +181,5 @@ if __name__ == "__main__":
                     )
 
             job_name_long = job_name_long.split(".slurm")[0]
-            for f in glob.glob(f"{job_name_long}*0.slurm"):
+            for f in glob.glob(f"{job_name_long}*.slurm"):
                 os.system(f"sbatch {f}")
