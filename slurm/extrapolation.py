@@ -161,7 +161,7 @@ if __name__ == "__main__":
         slurmer = make_slurm
 
 
-    for i, (d, n_l, n_h, do, L, f) in enumerate(itertools.product(hidden_dim, n_layers, heads, dropout, seq_len, d_ff)):
+    for i, (d, n_l, n_h, do, L, ff) in enumerate(itertools.product(hidden_dim, n_layers, heads, dropout, seq_len, d_ff)):
         for c in cities:
             exp_name = f"{exp_prefix}{c}_extrapolation"
             job_name_long = f"slurm/{exp_prefix}{c}_261021.slurm"
@@ -171,7 +171,7 @@ if __name__ == "__main__":
                     job_name_long=job_name_long,
                     seq_len=L,
                     d_model=d,
-                    d_ff=f,
+                    d_ff=ff,
                     nlayers=n_l,
                     heads=n_h,
                     batch_size=batch_size,
@@ -181,5 +181,5 @@ if __name__ == "__main__":
                     )
 
             job_name_long = job_name_long.split(".slurm")[0]
-            for f in glob.glob(f"{job_name_long}*.slurm"):
-                os.system(f"sbatch {f}")
+            for slurm_file in glob.glob(f"{job_name_long}*.slurm"):
+                os.system(f"sbatch {slurm_file}")
