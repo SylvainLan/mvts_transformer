@@ -895,7 +895,7 @@ class HURData(BaseData):
         df = df.set_index(["CITY_NAME", "date"]).sort_index()
         df["log_prec"] = df["prec"].apply(lambda x: np.log(x + 1))
         variables = ["TM", "RH", "TMIN", "TMAX", "RHMIN", "prec", "log_prec", "ETP0"]
-        variables = ["TM", "RH", "TMIN", "TMAX", "RHMIN", "prec", "log_prec"]
+        variables = ["TM", "RH", "TMIN", "TMAX", "RHMIN", "RHMAX", "prec", "log_prec"]
         indexes = [(c, date) for c in df.index.unique(level=0) for date in df.loc[c].index[self.max_seq_len - 1:]]
         self.dic_idx = {i: (c, date) for i, (c, date) in enumerate(indexes)}
         dfs = []
