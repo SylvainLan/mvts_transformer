@@ -141,17 +141,16 @@ if __name__ == "__main__":
     #if exp_prefix != "":
     #    exp_prefix = f"{exp_prefix}_"
 
-    hidden_dim = [16, 32, 64]
-    hidden_dim = [4, 8]
-    n_layers = [2, 4]
-    heads = [2, 8]
-    dropout = [.1]
-    seq_len = [10, 60]
-    d_ff = [32]
-    epochs = 1000
+    hidden_dim = [2, 4, 8, 16, 32, 64, 128, 256]
+    n_layers = [1, 2, 4]
+    heads = [1, 2, 4, 8]
+    dropout = [0, .1]
+    seq_len = [10, 30, 60]
+    d_ff = [16, 32, 64]
+    epochs = 2000
     batch_size = 32
     n_splits = 3
-    ncpus = 2
+    ncpus = 1
 
     cities = [15, 19, 27, 34, 50, 54, 77, 78, 84, 85, 99]
 
@@ -164,22 +163,25 @@ if __name__ == "__main__":
     for i, (d, n_l, n_h, do, L, ff) in enumerate(itertools.product(hidden_dim, n_layers, heads, dropout, seq_len, d_ff)):
         for c in cities:
             exp_name = f"{c}_{d}_{n_l}_{n_h}_{do}_{L}_{ff}"
-            job_name_long = f"slurm/{c}_{i}.slurm"
-            slurmer(station=c,
-                    exp_name=exp_name,
-                    job_name_short=f"{c}_{i}",
-                    job_name_long=job_name_long,
-                    seq_len=L,
-                    d_model=d,
-                    d_ff=ff,
-                    nlayers=n_l,
-                    heads=n_h,
-                    batch_size=batch_size,
-                    n_splits=n_splits,
-                    epochs=epochs,
-                    ncpus=ncpus,
-                    )
+            if os.path.exists(f"experiments/{exp_name}_0"):
+                print("already done")
+            else:
+                job_name_long = f"slurm/{c}_{i}.slurm"
+                slurmer(station=c,
+                        exp_name=exp_name,
+                        job_name_short=f"{c}_{i}",
+                        job_name_long=job_name_long,
+                        seq_len=L,
+                        d_model=d,
+                        d_ff=ff,
+                        nlayers=n_l,
+                        heads=n_h,
+                        batch_size=batch_size,
+                        n_splits=n_splits,
+                        epochs=epochs,
+                        ncpus=ncpus,
+                        )
 
-            job_name_long = job_name_long.split(".slurm")[0]
-            for slurm_file in glob.glob(f"{job_name_long}*.slurm"):
-                os.system(f"sbatch {slurm_file}")
+                job_name_long = job_name_long.split(".slurm")[0]
+                for slurm_file in glob.glob(f"{job_name_long}*.slurm"):
+                    os.system(f"sbatch {slurm_file}")
