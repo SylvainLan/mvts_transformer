@@ -142,17 +142,18 @@ if __name__ == "__main__":
     #    exp_prefix = f"{exp_prefix}_"
 
     hidden_dim = [16, 32, 64]
+    hidden_dim = [4, 8]
     n_layers = [2, 4]
     heads = [2, 8]
     dropout = [.1]
     seq_len = [10, 60]
-    d_ff = [64]
+    d_ff = [32]
     epochs = 1000
     batch_size = 32
     n_splits = 3
     ncpus = 2
 
-    cities = [19, 27, 34, 50, 54, 77, 78, 84, 85, 99]
+    cities = [15, 19, 27, 34, 50, 54, 77, 78, 84, 85, 99]
 
     if n_splits > 1:
         slurmer = make_slurm_split_val
