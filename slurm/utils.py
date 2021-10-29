@@ -2,7 +2,7 @@ import os
 
 def start_script(job_name, mode="cpu", ncpus=2):
     if mode == "cpu":
-        partition = "cpu_long"
+        partition = "cpu_med"
         cpu_per_task = ncpus
         conda_load = ""
         gpu_load = ""
@@ -17,7 +17,7 @@ def start_script(job_name, mode="cpu", ncpus=2):
     command = ("#!/bin/bash\n" +
                 f"#SBATCH --job-name={job_name}\n" +
                 "#SBATCH --output=output_ruche/%x.o%j\n" +
-                "#SBATCH --time=24:00:00\n" +
+                "#SBATCH --time=04:00:00\n" +
                 "#SBATCH --ntasks=1\n" +
                 f"#SBATCH --cpus-per-task={cpu_per_task}\n"
                 "#SBATCH --mem=64GB\n" +
