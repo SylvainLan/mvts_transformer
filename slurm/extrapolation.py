@@ -18,10 +18,10 @@ def make_slurm(station,
                epochs,
                ncpus,
                n_splits=1):
-    pattern = f"{station}TRAIN"
+    pattern = f"{station}RETRAIN"
     start = start_script(job_name=job_name_short, mode="cpu", ncpus=ncpus)
     cmd_create = create_command(station=station,
-                                name=station)
+                                name=f"{station}RETRAIN")
     cmd1 = train_command(name=exp_name,
                          pattern=pattern,
                          seq_len=seq_len,
@@ -40,11 +40,11 @@ def make_slurm(station,
                         heads=heads,
                         layers=nlayers)
     cmd3 = clean_command(job_name_long=job_name_long,
-                         exp_name=exp_name,
-                         other_args=[f"rm data/regression/HUR/HUR_{pattern}.csv"])
+                         exp_name=exp_name
+                         )
     with open(job_name_long, "w") as fh:
         fh.write(start)
-        #fh.write(cmd_create)
+        fh.write(cmd_create)
         fh.write(cmd1)
         fh.write(cmd2)
         fh.write(cmd3)
@@ -111,7 +111,7 @@ def make_slurm_split_val(station,
 
 
 
-#def _parse():
+# def _parse():
 #    parser = argparse.ArgumentParser()
 #    parser.add_argument("--ncpus", type=int, default=1)
 #    parser.add_argument("--nlayers", type=int, default=2)
