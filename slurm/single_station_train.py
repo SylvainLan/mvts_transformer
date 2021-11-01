@@ -43,7 +43,8 @@ def train(station,
                             d_ff=d_ff,
                             heads=heads,
                             layers=nlayers,
-                            eval_pattern="TRAIN")
+                            eval_pattern="TRAIN",
+                            stdout=False)
         #cmd3 = clean_command(job_name_long=job_name_long,
         #                     exp_name=f"{exp_name}_{i}",
         #                     )
