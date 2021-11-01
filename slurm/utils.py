@@ -1,6 +1,6 @@
 import os
 
-def start_script(job_name, mode="cpu", ncpus=2):
+def start_script(job_name, mode="cpu", ncpus=2, ngrid=0):
     if "gpu" in mode:
         partition = "gpu"
         time = "12"
@@ -16,6 +16,11 @@ def start_script(job_name, mode="cpu", ncpus=2):
     else:
         raise AttributeError("soit gpu soit cpu_med soit cpu_long")
 
+    if ngrid > 0:
+         grid = f"#SBATCH --array=0-{ngrid - 1}\n"
+    else:
+        grid = ""
+
     command = ("#!/bin/bash\n" +
                 f"#SBATCH --job-name={job_name}\n" +
                 "#SBATCH --output=output_ruche/%x.o%j\n" +
@@ -24,6 +29,7 @@ def start_script(job_name, mode="cpu", ncpus=2):
                 f"#SBATCH --cpus-per-task={cpu_per_task}\n"
                 "#SBATCH --mem=64GB\n" +
                 f"#SBATCH --partition={partition}\n" +
+                grid +
                 gpu_load +
                 "\n" +
                 "module purge\n" +
@@ -62,57 +68,106 @@ def create_command(station, name, n_splits=1, station_val=None, length=None, cit
     return command
 
 
-def train_command(name, pattern, seq_len, batch_size, d_model, d_ff, heads, layers, val_ratio=0.2, epochs=2000, other_args=None, val_pattern=None):
+def train_command(name, pattern, seq_len, batch_size, d_model, d_ff, heads, layers, val_ratio=0.2, epochs=2000, other_args=None, val_pattern=None, stdout=True):
     if val_pattern is not None:
         val_line = f"--val_pattern {val_pattern} "
+        val_line = ["--val_pattern", f"{val_pattern}"]
     else:
         val_line = f"--val_ratio {val_ratio} "
-    command = "python src/main.py " +\
-              "--output_dir experiments " +\
-              f"--name {name} " +\
-              f"--task regression " +\
-              f"--data_dir data/regression/HUR/ " +\
-              "--data_class hur " +\
-              f"--pattern {pattern} " +\
-              f"{val_line}" +\
-              f"--epochs {epochs} " +\
-              "--optimizer RAdam " +\
-              f"--batch_size {batch_size} " +\
-              f"--d_model {d_model} " +\
-              f"--dim_feedforward {d_ff} " +\
-              f"--num_heads {heads} " +\
-              f"--num_layers {layers} " +\
-              f"--max_seq_len {seq_len} " +\
-              "--no_timestamp " +\
-              "--normalization_layer LayerNorm " +\
-              "--seed 1 "
+        val_line = ["--val_ratio", f"{val_ratio}"]
+    command = ["python", "src/main.py",
+               "--output_dir", "experiments",
+               "--name", f"{name}",
+               "--task", "regression",
+               "--data_dir", "data/regression/HUR",
+               "--data_class", "hur",
+               "--pattern", f"{pattern}",
+               *val_line,
+               "--epochs", f"{epochs}",
+               "--optimizer", "RAdam",
+               "--batch_size", f"{batch_size}",
+               "--d_model", f"{d_model}",
+               "--dim_feedforward", f"{d_ff}",
+               "--num_heads", f"{heads}",
+               "--num_layers", f"{layers}",
+               "--max_seq_len", f"{seq_len}",
+               "--no_timestamp",
+               "--normalization_layer", "LayerNorm",
+               "--seed", "1"
+               ]
+    #command = "python src/main.py " +\
+    #          "--output_dir experiments " +\
+    #          f"--name {name} " +\
+    #          f"--task regression " +\
+    #          f"--data_dir data/regression/HUR/ " +\
+    #          "--data_class hur " +\
+    #          f"--pattern {pattern} " +\
+    #          f"{val_line}" +\
+    #          f"--epochs {epochs} " +\
+    #          "--optimizer RAdam " +\
+    #          f"--batch_size {batch_size} " +\
+    #          f"--d_model {d_model} " +\
+    #          f"--dim_feedforward {d_ff} " +\
+    #          f"--num_heads {heads} " +\
+    #          f"--num_layers {layers} " +\
+    #          f"--max_seq_len {seq_len} " +\
+    #          "--no_timestamp " +\
+    #          "--normalization_layer LayerNorm " +\
+    #          "--seed 1 "
     if other_args is not None:
         for arg in other_args:
-            command += arg + " "
-    command += "\n"
+            #command += arg + " "
+            command.append(arg)
+    #command += "\n"
+    #return command
+    if stdout:
+        return " ".join(command) + "\n"
+    else:
+        return command
 
-    return command
 
 
-def eval_command(name, train_pattern, seq_len, batch_size, d_model, d_ff, heads, layers, eval_pattern="FULL"):
-    command = "python src/eval.py " +\
-              "--output_dir experiments " +\
-              f"--name {name} " +\
-              "--task regression " +\
-              f"--data_dir data/regression/HUR/ " +\
-              "--data_class hur " +\
-              f"--pattern {train_pattern} " +\
-              f"--load_model experiments/{name}/checkpoints/model_best.pth " +\
-              "--test_pattern FULL " +\
-              f"--batch_size {batch_size} " +\
-              f"--d_model {d_model} " +\
-              f"--dim_feedforward {d_ff} " +\
-              f"--num_heads {heads} " +\
-              f"--num_layers {layers} " +\
-              f"--max_seq_len {seq_len} " +\
-              "--normalization_layer LayerNorm " +\
-              "--no_timestamp\n"
-    return command
+def eval_command(name, train_pattern, seq_len, batch_size, d_model, d_ff, heads, layers, eval_pattern="FULL", stdout=True):
+    command = ["python", "src/eval.py" ,
+              "--output_dir", "experiments",
+              f"--name", f"{name}",
+              "--task", "regression",
+              f"--data_dir", "data/regression/HUR/",
+              "--data_class", "hur",
+              f"--pattern", f"{train_pattern}",
+              f"--load_model", f"experiments/{name}/checkpoints/model_best.pth",
+              "--test_pattern", "FULL",
+              f"--batch_size", f"{batch_size}",
+              f"--d_model", f"{d_model}",
+              f"--dim_feedforward", f"{d_ff}",
+              f"--num_heads", f"{heads}",
+              f"--num_layers", f"{layers}",
+              f"--max_seq_len", f"{seq_len}",
+              "--normalization_layer",  "LayerNorm",
+              "--no_timestamp"]
+
+    #command = "python src/eval.py " +\
+    #          "--output_dir experiments " +\
+    #          f"--name {name} " +\
+    #          "--task regression " +\
+    #          f"--data_dir data/regression/HUR/ " +\
+    #          "--data_class hur " +\
+    #          f"--pattern {train_pattern} " +\
+    #          f"--load_model experiments/{name}/checkpoints/model_best.pth " +\
+    #          "--test_pattern FULL " +\
+    #          f"--batch_size {batch_size} " +\
+    #          f"--d_model {d_model} " +\
+    #          f"--dim_feedforward {d_ff} " +\
+    #          f"--num_heads {heads} " +\
+    #          f"--num_layers {layers} " +\
+    #          f"--max_seq_len {seq_len} " +\
+    #          "--normalization_layer LayerNorm " +\
+    #          "--no_timestamp\n"
+    #return command
+    if stdout:
+        return " ".join(command) + "\n"
+    else:
+        return command
 
 
 def clean_command(job_name_long, exp_name, other_args=None):
