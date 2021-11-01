@@ -1,23 +1,25 @@
 import os
 
 def start_script(job_name, mode="cpu", ncpus=2):
-    if mode == "cpu":
-        partition = "cpu_med"
-        cpu_per_task = ncpus
-        conda_load = ""
-        gpu_load = ""
-    elif mode == "gpu":
+    if "gpu" in mode:
         partition = "gpu"
+        time = "12"
         cpu_per_task = 2
         conda_load = "module load cuda/10.2.89/intel-19.0.3.199\n"
         gpu_load = "#SBATCH --gres=gpu:1\n"
+    elif mode == "cpu_long" or mode == "cpu_med":
+        time = {"cpu_long": "24", "cpu_med": "04"}[mode]
+        partition = mode
+        cpu_per_task = ncpus
+        conda_load = ""
+        gpu_load = ""
     else:
-        raise AttributeError("soit gpu soit cpu")
+        raise AttributeError("soit gpu soit cpu_med soit cpu_long")
 
     command = ("#!/bin/bash\n" +
                 f"#SBATCH --job-name={job_name}\n" +
                 "#SBATCH --output=output_ruche/%x.o%j\n" +
-                "#SBATCH --time=04:00:00\n" +
+                f"#SBATCH --time={time}:00:00\n" +
                 "#SBATCH --ntasks=1\n" +
                 f"#SBATCH --cpus-per-task={cpu_per_task}\n"
                 "#SBATCH --mem=64GB\n" +
