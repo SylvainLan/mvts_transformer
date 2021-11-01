@@ -17,7 +17,7 @@ def make_slurm(exp_name,
                dropout,
                ):
     start = start_script(job_name=job_name, mode="cpu_long", ncpus=2, ngrid=len(cities))
-    command = f"python slurm/single_station_train.py --index_station --index_station $SLURM_ARRAY_TASK_ID --seq_len {seq_len} --d_model {d_model} --d_ff {d_ff} --heads {heads} --layers {nlayers} --dropout {dropout}\n"
+    command = f"python slurm/single_station_train.py --index_station $SLURM_ARRAY_TASK_ID --seq_len {seq_len} --d_model {d_model} --d_ff {d_ff} --heads {heads} --layers {nlayers} --dropout {dropout}\n"
 
     with open(job_name, "w") as fh:
         fh.write(start)
