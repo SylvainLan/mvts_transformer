@@ -37,17 +37,20 @@ if __name__ == "__main__":
 
 
     for i, (d, n_l, n_h, do, L, ff) in enumerate(parameters):
-        exp_name = f"{d}_{n_l}_{n_h}_{do}_{L}_{ff}"
-        job_name = f"slurm/{exp_name}.slurm"
-        make_slurm(
-                   exp_name=exp_name,
-                   job_name=job_name,
-                   seq_len=L,
-                   d_model=d,
-                   d_ff=ff,
-                   nlayers=n_l,
-                   heads=n_h,
-                   dropout=do,
-                   )
+        if n_h > d:
+            print("passing, wrong parameters")
+        else:
+            exp_name = f"{d}_{n_l}_{n_h}_{do}_{L}_{ff}"
+            job_name = f"slurm/{exp_name}.slurm"
+            make_slurm(
+                       exp_name=exp_name,
+                       job_name=job_name,
+                       seq_len=L,
+                       d_model=d,
+                       d_ff=ff,
+                       nlayers=n_l,
+                       heads=n_h,
+                       dropout=do,
+                       )
 
-        os.system(f"sbatch {job_name}")
+            os.system(f"sbatch {job_name}")
