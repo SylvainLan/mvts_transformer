@@ -33,6 +33,15 @@ if __name__ == "__main__":
     seq_len = [10, 30, 60]
     d_ff = [32, 64]
 
+    hidden_dim = [4, 16, 64]
+    n_layers = [2, 4]
+    heads = [1, 4]
+    dropout = [.1]
+    seq_len = [10, 30, 60]
+    d_ff = [32, 64]
+
+
+
     parameters = itertools.product(hidden_dim, n_layers, heads, dropout, seq_len, d_ff)
 
 
