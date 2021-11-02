@@ -19,7 +19,7 @@ def make_slurm(station,
                ncpus,
                n_splits=1):
     pattern = f"{station}RETRAIN"
-    start = start_script(job_name=job_name_short, mode="cpu", ncpus=ncpus)
+    start = start_script(job_name=job_name_short, mode="cpu_med", ncpus=ncpus)
     cmd_create = create_command(station=station,
                                 name=f"{station}RETRAIN")
     cmd1 = train_command(name=exp_name,
@@ -65,7 +65,7 @@ def make_slurm_split_val(station,
                          ncpus):
     pattern = f"{station}TRAIN"
     val_pattern = f"{station}VAL"
-    start = start_script(job_name=job_name_short, mode="cpu", ncpus=ncpus)
+    start = start_script(job_name=job_name_short, mode="cpu_med", ncpus=ncpus)
     cmd_create = create_command(station=station,
                                 name=station,
                                 n_splits=n_splits)
@@ -142,11 +142,17 @@ if __name__ == "__main__":
     #    exp_prefix = f"{exp_prefix}_"
 
     hidden_dim = [2, 4, 8, 16, 32, 64, 128, 256]
+    hidden_dim = [2]
     n_layers = [1, 2, 4]
+    n_layers = [1]
     heads = [1, 2, 4, 8]
+    heads = [1]
     dropout = [0, .1]
+    dropout = [0]
     seq_len = [10, 30, 60]
+    seq_len = [10]
     d_ff = [16, 32, 64]
+    d_ff = [16]
     epochs = 2000
     batch_size = 32
     n_splits = 3
