@@ -24,6 +24,7 @@ def make_slurm(station,
                                 name=f"{station}RETRAIN")
     cmd1 = train_command(name=exp_name,
                          pattern=pattern,
+                         val_pattern=f"{station}TEST"
                          seq_len=seq_len,
                          d_model=d_model,
                          d_ff=d_ff,
