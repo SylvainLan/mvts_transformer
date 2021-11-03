@@ -53,8 +53,11 @@ def train(station,
         #cmds_clean.append(cmd3)
 
     for i in range(n_splits):
+        print(cmds_train[i])
+        print(cmds_eval[i])
         subprocess.run(cmds_train[i])
         subprocess.run(cmds_eval[i])
+        break
         #subprocess.run(cmds_clean[i])
 
 
@@ -89,7 +92,7 @@ if __name__ == "__main__":
     cities = [15, 19, 27, 34, 50, 54, 77, 78, 84, 85, 99]
 
     station = cities[index_station]
-    exp_name = f"{d_model}_{layers}_{heads}_{dropout}_{layers}_{d_ff}"
+    exp_name = f"{d_model}_{layers}_{heads}_{dropout}_{layers}_{seq_len}_{d_ff}"
     job_name_long = f"slurm/{station}_{exp_name}.slurm"
     train(station=station,
           exp_name=exp_name,
