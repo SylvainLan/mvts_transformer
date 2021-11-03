@@ -88,7 +88,7 @@ if __name__ == "__main__":
     batch_size = 32
     ncpus = 2
     n_splits = 3
-    epochs = 10
+    epochs = 1000
     cities = [15, 19, 27, 34, 50, 54, 77, 78, 84, 85, 99]
 
     station = cities[index_station]
