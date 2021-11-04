@@ -15,8 +15,7 @@ def train(station,
           heads,
           batch_size,
           n_splits,
-          epochs,
-          ncpus):
+          epochs):
     pattern = f"{station}TRAIN"
     val_pattern = f"{station}VAL"
 
@@ -47,17 +46,16 @@ def train(station,
                             stdout=False)
         #cmd3 = clean_command(job_name_long=job_name_long,
         #                     exp_name=f"{exp_name}_{i}",
-        #                     )
+        #                     stdout=False)
         cmds_train.append(cmd1)
         cmds_eval.append(cmd2)
         #cmds_clean.append(cmd3)
 
     for i in range(n_splits):
         print(cmds_train[i])
-        print(cmds_eval[i])
         subprocess.run(cmds_train[i])
+        print(cmds_eval[i])
         subprocess.run(cmds_eval[i])
-        break
         #subprocess.run(cmds_clean[i])
 
 
@@ -86,14 +84,13 @@ if __name__ == "__main__":
 
 
     batch_size = 32
-    ncpus = 2
     n_splits = 3
-    epochs = 1000
+    epochs = 10
     cities = [15, 19, 27, 34, 50, 54, 77, 78, 84, 85, 99]
 
     station = cities[index_station]
-    exp_name = f"{d_model}_{layers}_{heads}_{dropout}_{layers}_{seq_len}_{d_ff}"
-    job_name_long = f"slurm/{station}_{exp_name}.slurm"
+    exp_name = f"{station}_{d_model}_{layers}_{heads}_{dropout}_{layers}_{seq_len}_{d_ff}"
+    job_name_long = f"slurm/{exp_name}.slurm"
     train(station=station,
           exp_name=exp_name,
           job_name_long=job_name_long,
@@ -104,5 +101,4 @@ if __name__ == "__main__":
           heads=heads,
           batch_size=batch_size,
           n_splits=3,
-          epochs=epochs,
-          ncpus=ncpus)
+          epochs=epochs)

@@ -17,7 +17,7 @@ def make_slurm(exp_name,
                dropout,
                ):
     job_name_short = "grid_search"
-    start = start_script(job_name=job_name_short, mode="cpu_long", ncpus=2, ngrid=len(cities))
+    start = start_script(job_name=job_name_short, mode="cpu_med", ncpus=1, ngrid=len(cities))
     command = f"python slurm/single_station_train.py --index_station $SLURM_ARRAY_TASK_ID --seq_len {seq_len} --d_model {d_model} --d_ff {d_ff} --heads {heads} --layers {nlayers} --dropout {dropout}\n"
 
     with open(job_name, "w") as fh:
