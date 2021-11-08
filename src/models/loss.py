@@ -33,7 +33,8 @@ def l2_reg_loss(model):
 
 def l2_HUR(output, target):
     """Balanced RMSE."""
-    loss = ((output - target)**2) * (1 - target)
+    #loss = ((output - target)**2) * (1 - target)
+    loss = ((output - target)**2) * (target < .35)
     return loss
 
 
