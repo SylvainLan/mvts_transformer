@@ -16,6 +16,9 @@ def get_loss_module(config):
     if task == "regression":
         return nn.MSELoss(reduction='none')  # outputs loss for each batch sample
 
+    if task == "HUR":
+        return l2_HUR
+
     else:
         raise ValueError("Loss module for task '{}' does not exist".format(task))
 
@@ -26,6 +29,12 @@ def l2_reg_loss(model):
     for name, param in model.named_parameters():
         if name == 'output_layer.weight':
             return torch.sum(torch.square(param))
+
+
+def l2_HUR(output, target):
+    """Balanced RMSE."""
+    loss = ((output - target)**2) * (1 - target)
+    return loss
 
 
 class NoFussCrossEntropyLoss(nn.CrossEntropyLoss):
