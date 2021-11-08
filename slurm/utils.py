@@ -170,14 +170,25 @@ def eval_command(name, train_pattern, seq_len, batch_size, d_model, d_ff, heads,
         return command
 
 
-def clean_command(job_name_long, exp_name, other_args=None):
+def clean_command(job_name_long, exp_name, other_args=None, stdout=True):
     # TODO attention à l'etoile, peut être que ça peut casser des trucs
     command = f"cp {job_name_long} experiments/{exp_name}/\n" +\
               f"rm {job_name_long}\n"
+
+    command = ["mv", f"{job_name_long}", f"experiments/{exp_name}/"]
     if other_args is not None:
         for arg in other_args:
-            command += arg + "\n"
-    return command
+            command.append(arg)
+    if stdout:
+        if other_args is not None:
+            cmds = [" ".join(command)]
+            for arg in other_args:
+                cmds.append(arg)
+            return "\n".join(cmds)
+    else:
+        if other_args is not None:
+            raise AttributeError("Not implemented yet")
+        return command
 
 
 # def imputation_command(name, pattern, seq_len, val_ratio=0.2, epochs=2000, batch_size=32, d_model=16, d_ff=128, heads=4, layers=2, other_args=None):
