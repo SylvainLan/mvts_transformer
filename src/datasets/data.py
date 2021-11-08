@@ -924,7 +924,7 @@ class HURData(BaseData):
         all_df = pd.concat([pd.DataFrame({f"dim_{i}": all_df[i][k] for i, _ in enumerate(variables)},
                                          index=[k for _ in range(self.max_seq_len)])
                             for k in range(len(all_df[0]))])
-        if self.config["task"] == "regression":
+        if self.config["task"] == "regression" or self.config["task"] == "HUR":
             labels_df = [df.loc[c].loc[date, "HUR"]
                          for c in df.index.unique(level=0)
                          for date in df.loc[c].index[self.max_seq_len - 1:]]

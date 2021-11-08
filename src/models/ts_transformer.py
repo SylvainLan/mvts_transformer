@@ -31,7 +31,7 @@ def model_factory(config, data):
                                         pos_encoding=config['pos_encoding'], activation=config['activation'],
                                         norm=config['normalization_layer'], freeze=config['freeze'])
 
-    if (task == "classification") or (task == "regression"):
+    if (task == "classification") or (task == "regression") or (task == "HUR"):
         num_labels = len(data.class_names) if task == "classification" else data.labels_df.shape[1]  # dimensionality of labels
         if config['model'] == 'LINEAR':
             return DummyTSTransformerEncoderClassiregressor(feat_dim, max_seq_len, config['d_model'],

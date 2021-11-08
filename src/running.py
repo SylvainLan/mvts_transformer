@@ -43,7 +43,7 @@ def pipeline_factory(config):
     if task == "transduction":
         return partial(TransductionDataset, mask_feats=config['mask_feats'],
                        start_hint=config['start_hint'], end_hint=config['end_hint']), collate_unsuperv, UnsupervisedRunner
-    if (task == "classification") or (task == "regression"):
+    if (task == "classification") or (task == "regression") or (task == "HUR"):
         return ClassiregressionDataset, collate_superv, SupervisedRunner
     else:
         raise NotImplementedError("Task '{}' not implemented".format(task))
