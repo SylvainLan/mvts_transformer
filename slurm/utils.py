@@ -186,6 +186,7 @@ def clean_command(job_name_long, exp_name, other_args=None, stdout=True):
             for arg in other_args:
                 cmds.append(arg)
             return "\n".join(cmds)
+        return " ".join(command)
     else:
         if other_args is not None:
             raise AttributeError("Not implemented yet")
